@@ -1,0 +1,1852 @@
+<!doctype html>
+<html dir="rtl" lang="he"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מוח חכם לקלוד קוד, לומדה אינטראקטיבית</title>
+<meta name="description" content="לומדה אינטראקטיבית: איך בונים לקלוד קוד מערכת זיכרון אמיתית, CLAUDE.md, קטלוג זיכרון וסקיל אישי שממלא אותו לבד.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&amp;family=Heebo:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+:root {
+  --primary:      #000000;
+  --secondary:    #FDD3DD;
+  --amber:        #BBD23C;
+  --gray:         #8E8B88;
+  --black:        #000000;
+  --white:        #FFFFFF;
+  --offwhite:     #FAF8F2;
+  --page-bg:      #fcfaf6;
+  --page-bg-alt:  var(--offwhite);
+  --glass-bg:     rgba(255,255,255,0.6);
+  --glass-border: rgba(255,255,255,0.3);
+  --glass-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  --ease-out:     cubic-bezier(0.16,1,0.3,1);
+  --spring:       cubic-bezier(0.34,1.56,0.64,1);
+  --content-max:  1040px;
+  --user-border:   var(--secondary);
+  --claude-border: var(--black);
+  --info-border:   var(--gray);
+  --header-h:  96px;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { direction:rtl; scroll-behavior:smooth; }
+body { font-family:'Heebo',sans-serif; color:var(--black); background:var(--page-bg); line-height:1.7; overflow-x:hidden; }
+h1,h2,h3,h4 { font-family:'Rubik',sans-serif; font-weight:800; line-height:1.3; }
+img { max-width:100%; }
+button { font: inherit; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; border-radius: 4px; }
+
+/* ===== Logo Bar ===== */
+.logo-bar {
+  width:100%; height:var(--header-h); background:var(--secondary); padding:2px 20px;
+  display:flex; align-items:center; justify-content:center;
+  direction:ltr; z-index:500;
+  border-bottom:1px solid rgba(0,0,0,0.06);
+  position:absolute; top:0; left:0; right:0;
+}
+.app-logo-bar { position:fixed; top:0; left:0; right:0; z-index:500; background:var(--secondary); }
+.logo-bar-center { width:calc(100% - 56px); max-width:410px; height:auto; display:block; }
+
+/* ===== Hero ===== */
+.hero {
+  position:relative; min-height:100vh;
+  display:flex; align-items:flex-end; justify-content:center;
+  overflow:hidden;
+  background:linear-gradient(135deg,#FAF8F2 0%,#F5F2E7 50%,#FAF8F2 100%);
+}
+.hero-video { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:0; }
+.hero-overlay { position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.45); z-index:1; }
+.hero-side-fade { position:absolute; top:0; width:20%; height:100%; z-index:2; pointer-events:none; }
+.hero-side-fade.left  { left:0;  background:linear-gradient(to right,rgba(242,239,232,1) 0%,rgba(242,239,232,0) 100%); }
+.hero-side-fade.right { right:0; background:linear-gradient(to left, rgba(242,239,232,1) 0%,rgba(242,239,232,0) 100%); }
+
+.hero-content {
+  position:absolute; z-index:3; text-align:center;
+  padding:2rem 3rem 2.5rem; max-width:640px; width:90%;
+  background:rgba(255,255,255,0.45);
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  border-radius:20px; border:1px solid rgba(255,255,255,0.4);
+  left:50%; top:10vh; transform:translateX(-50%);
+  transition:top 1.2s cubic-bezier(0.25,1,0.5,1);
+}
+.hero-badge {
+  display:inline-flex; align-items:center; gap:6px; padding:4px 16px;
+  background:rgba(0,0,0,0.06); color:var(--primary);
+  border-radius:50px; font-size:0.78rem; font-weight:700; margin-bottom:1rem;
+  opacity:0; transform:translateY(20px);
+}
+.hero-content h1 { font-size:clamp(1.9rem,4.5vw,2.9rem); font-weight:800; margin-bottom:0.4rem; opacity:0; transform:translateY(30px); letter-spacing:0.02em; }
+.hero-title-eyebrow {
+  display:inline-block; font-size:0.6em; font-weight:700; letter-spacing:0.28em;
+  color:var(--amber); text-transform:uppercase; margin-bottom:0.6rem;
+  padding:0.35em 0.9em; border:2px solid var(--amber); border-radius:50px;
+}
+.hero-subtitle    { font-size:clamp(1rem,2vw,1.15rem); color:rgba(0,0,0,0.8); font-weight:600; margin-bottom:0.5rem; opacity:0; transform:translateY(30px); }
+.hero-content p   { font-size:clamp(0.88rem,1.8vw,1rem); color:rgba(0,0,0,0.7); margin-bottom:1.5rem; opacity:0; transform:translateY(30px); }
+.hero-btn {
+  display:inline-block; padding:15px 46px;
+  background:var(--black); color:var(--white);
+  border:none; border-radius:50px;
+  font-family:'Heebo',sans-serif; font-size:1.1rem; font-weight:600;
+  cursor:pointer; opacity:0; transform:translateY(30px);
+  transition:transform 0.2s var(--spring), box-shadow 0.2s;
+}
+.hero-btn:hover, .hero-btn:focus-visible { transform:translateY(-2px); box-shadow:0 8px 30px rgba(0,0,0,0.2); }
+
+.hero.animate .hero-badge    { animation:fadeUp 0.8s var(--ease-out) 0.3s forwards; }
+.hero.animate h1             { animation:fadeUp 0.8s var(--ease-out) 0.5s forwards; }
+.hero.animate .hero-subtitle { animation:fadeUp 0.8s var(--ease-out) 0.7s forwards; }
+.hero.animate p              { animation:fadeUp 0.8s var(--ease-out) 0.9s forwards; }
+.hero.animate .hero-btn      { animation:fadeUp 0.8s var(--ease-out) 1.1s forwards; }
+@keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
+
+/* ===== App Layout ===== */
+.app { display:none; min-height:100vh; flex-direction:column; }
+.app.visible { display:flex; }
+.app-body { display:flex; align-items:flex-start; flex:1; padding-top:var(--header-h); }
+.main-content {
+  flex:1; min-width:0; padding:2rem 2rem 6rem;
+  max-width:var(--content-max); margin:0 auto; width:100%;
+}
+.menu-toggle {
+  display:none; align-items:center; justify-content:center;
+  width:38px; height:38px; border-radius:50%;
+  position:absolute; top:50%; right:16px; transform:translateY(-50%);
+  border:none; background:rgba(0,0,0,0.08); color:var(--black); cursor:pointer;
+  transition:background 0.2s;
+}
+.menu-toggle:hover { background:rgba(0,0,0,0.15); }
+.sidebar-backdrop { display:none; position:fixed; inset:0; top:var(--header-h); background:rgba(0,0,0,0.35); z-index:390; }
+.sidebar {
+  position:sticky; top:var(--header-h); align-self:flex-start;
+  width:250px; flex-shrink:0; height:calc(100vh - var(--header-h));
+  overflow-y:auto; overscroll-behavior:contain;
+  padding:1.75rem 1.5rem 2rem 1.25rem;
+  background:var(--page-bg-alt); border-left:1px solid rgba(0,0,0,0.07);
+}
+.side-progress-track { position:relative; height:3px; background:rgba(0,0,0,0.08); border-radius:3px; margin-bottom:0.5rem; overflow:hidden; }
+.side-progress-fill { position:absolute; top:0; right:0; left:0; height:100%; background:linear-gradient(90deg,var(--secondary),var(--amber)); transition:width 0.5s var(--ease-out); }
+.side-progress-label { font-size:0.72rem; font-weight:600; color:var(--gray); margin-bottom:1.6rem; }
+.side-steps { display:flex; flex-direction:column; gap:5px; }
+.side-step {
+  display:flex; align-items:center; gap:11px; width:100%;
+  padding:10px 10px; border:none; border-radius:10px; background:none;
+  cursor:pointer; font-family:'Heebo',sans-serif; font-size:0.95rem; font-weight:600;
+  color:rgba(0,0,0,0.65); text-align:right; line-height:1.35;
+  transition:background 0.15s, color 0.15s;
+}
+.side-step:hover { background:rgba(0,0,0,0.05); color:var(--black); }
+.side-step.completed { color:var(--primary); }
+.side-step.active { background:var(--black); color:var(--white); font-weight:700; }
+.side-step-num {
+  width:26px; height:26px; border-radius:50%; flex-shrink:0;
+  background:rgba(0,0,0,0.07);
+  display:flex; align-items:center; justify-content:center;
+  font-size:0.72rem; font-weight:700;
+  transition:background 0.15s, color 0.15s;
+}
+.side-step-num [data-lucide] { width:12px; height:12px; stroke-width:3; }
+.side-step.completed .side-step-num { background:var(--primary); color:var(--white); }
+.side-step.active    .side-step-num { background:var(--amber); color:var(--black); }
+
+/* ===== Step ===== */
+.step { display:none; }
+.step.active { display:block; }
+.step-header { margin-bottom:1.75rem; padding-bottom:1.25rem; border-bottom:2px solid rgba(0,0,0,0.12); }
+.step-number { font-size:0.75rem; font-weight:700; color:var(--primary); letter-spacing:0.14em; text-transform:uppercase; }
+.step-title  { font-size:clamp(1.9rem,3.6vw,2.7rem); font-weight:800; margin:0.3rem 0; color:#000000; }
+.step-desc   { font-size:1.08rem; color:rgba(0,0,0,0.7); }
+.section-label { display:flex; align-items:center; gap:8px; font-size:0.72rem; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--primary); margin:2rem 0 0.6rem; }
+.section-label:first-child { margin-top:0; }
+.hl-underline { position:relative; display:inline-block; }
+.hl-underline::after {
+  content:''; position:absolute; right:-6%; left:-6%; bottom:-0.08em; height:0.42em;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 40' preserveAspectRatio='none'%3E%3Cpath d='M14,26 C80,8 210,6 275,18' stroke='%23BBD23C' stroke-width='15' stroke-linecap='round' fill='none'/%3E%3Ccircle cx='284' cy='16' r='10' fill='%23BBD23C'/%3E%3C/svg%3E");
+  background-size:100% 100%; background-repeat:no-repeat; pointer-events:none;
+}
+
+/* ===== Step Cards ===== */
+.steps-list { display:flex; flex-direction:column; gap:0.65rem; margin:0.5rem 0 1.25rem; }
+.step-card {
+  display:flex; gap:0.9rem; align-items:flex-start;
+  padding:0.95rem 1.15rem; border-radius:14px;
+  border:1px solid rgba(0,0,0,0.06); background:#fff;
+  box-shadow:0 2px 8px rgba(0,0,0,0.03);
+  transition:box-shadow 0.2s, transform 0.2s var(--spring);
+}
+.step-card:hover { box-shadow:0 4px 16px rgba(0,0,0,0.07); transform:translateY(-1px); }
+.step-card.user   { border-right:3px solid var(--user-border);   background:#FCE4EA; }
+.step-card.claude { border-right:3px solid var(--claude-border); background:#ECECE9; }
+.step-card.info   { border-right:3px solid var(--amber);         background:#fff; }
+.step-type-icon { width:52px; height:52px; flex-shrink:0; object-fit:contain; }
+.step-who { font-size:0.95rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:0.3rem; }
+.step-card.user   .step-who { color:var(--black); }
+.step-card.claude .step-who { color:var(--claude-border); }
+.step-card.info   .step-who { color:var(--primary); }
+.step-card-body p  { font-size:1rem; color:#222; margin:0; }
+.step-card-body p + p { margin-top:0.4rem; }
+.step-note { font-size:0.8rem; color:var(--gray); margin-top:0.35rem; font-style:italic; }
+ul.content-list { padding-right:18px; display:flex; flex-direction:column; gap:4px; font-size:0.98rem; color:#222; margin-top:0.5rem; }
+.step-card-body ul.content-list { margin-top:0.45rem; }
+
+/* ===== Dream Timeline ===== */
+.dream-timeline { display:flex; flex-direction:column; margin:0.75rem 0 1.25rem; }
+.dream-step { display:flex; gap:1rem; }
+.dream-node-col { position:relative; display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:52px; }
+.dream-tag {
+  position:absolute; bottom:calc(100% + 12px); right:0;
+  background:var(--amber); color:var(--black); font-family:'Heebo',sans-serif;
+  font-weight:800; font-size:0.72rem; letter-spacing:0.01em; white-space:nowrap;
+  padding:5px 13px; border-radius:50px; box-shadow:0 4px 12px rgba(0,0,0,0.18);
+  z-index:3; animation:dreamTagPulse 2.4s ease-in-out infinite;
+}
+.dream-tag::after { content:''; position:absolute; top:100%; right:18px; border:6px solid transparent; border-top-color:var(--amber); }
+@keyframes dreamTagPulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.07); } }
+@media (prefers-reduced-motion:reduce) { .dream-tag { animation:none; } }
+
+/* ===== Shield Layers ===== */
+.shield-stack { display:flex; flex-direction:column; align-items:center; margin:1.4rem 0 1.75rem; }
+.shield-layer {
+  width:100%; max-width:580px; border-radius:16px; padding:1rem 1.5rem;
+  cursor:pointer; user-select:none; position:relative;
+  transition:transform 0.3s var(--spring), box-shadow 0.3s var(--ease-out);
+  box-shadow:0 4px 14px rgba(0,0,0,0.1);
+}
+.shield-layer + .shield-layer { margin-top:-16px; }
+.shield-layer.l1 { background:rgba(187,210,60,0.16); border:1px solid rgba(187,210,60,0.45); color:var(--black); z-index:1; }
+.shield-layer.l2 { background:rgba(253,211,221,0.32); border:1px solid rgba(253,211,221,0.75); color:var(--black); width:89%; z-index:2; }
+.shield-layer.l3 { background:rgba(0,0,0,0.045); border:1px solid rgba(0,0,0,0.16); color:var(--black); width:78%; z-index:3; }
+.shield-layer:hover, .shield-layer.open, .shield-layer:focus-visible {
+  transform:translateY(-5px) scale(1.02); box-shadow:0 14px 30px rgba(0,0,0,0.24); z-index:10; outline:none;
+}
+.shield-layer-title { display:flex; align-items:center; justify-content:space-between; gap:0.75rem; font-weight:800; font-size:1.02rem; }
+.shield-layer-chevron { flex-shrink:0; transition:transform 0.3s var(--ease-out); }
+.shield-layer:hover .shield-layer-chevron, .shield-layer.open .shield-layer-chevron { transform:rotate(180deg); }
+.shield-layer-desc { max-height:0; overflow:hidden; font-size:0.87rem; line-height:1.65; opacity:0; transition:max-height 0.4s var(--ease-out), opacity 0.3s var(--ease-out), margin-top 0.4s var(--ease-out); }
+.shield-layer:hover .shield-layer-desc, .shield-layer.open .shield-layer-desc { max-height:200px; opacity:1; margin-top:0.65rem; }
+@media (max-width:640px) {
+  .shield-layer.l2 { width:94%; }
+  .shield-layer.l3 { width:88%; }
+}
+@media (prefers-reduced-motion:reduce) { .shield-layer, .shield-layer-chevron, .shield-layer-desc { transition:none; } }
+.dream-node {
+  width:52px; height:52px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Heebo',sans-serif; font-weight:800; font-size:1.15rem; color:var(--black);
+  background:#ECECE9; border:2px solid var(--claude-border);
+  transition:transform 0.35s var(--spring), box-shadow 0.3s var(--ease-out);
+  cursor:default;
+}
+.dream-node.user { background:#FCE4EA; border-color:var(--user-border); }
+.dream-node:hover, .dream-node:focus-visible { transform:scale(1.24); box-shadow:0 8px 20px rgba(0,0,0,0.2); z-index:2; outline:none; }
+.dream-connector { --fill:0%; width:3px; flex:1; min-height:70px; background:rgba(0,0,0,0.1); margin:2px 0; border-radius:2px; overflow:hidden; position:relative; }
+.dream-connector::after { content:''; position:absolute; top:0; right:0; left:0; height:var(--fill); background:var(--claude-border); }
+.dream-step:last-child .dream-connector { display:none; }
+.dream-step-body { flex:1; padding-top:8px; padding-bottom:3.2rem; opacity:0.32; transform:translateY(16px); transition:opacity 0.65s var(--ease-out), transform 0.65s var(--ease-out); }
+.dream-step.seen .dream-step-body { opacity:1; transform:translateY(0); }
+.dream-step:last-child .dream-step-body { padding-bottom:0; }
+.dream-step-body .step-who { font-size:0.95rem; font-weight:700; letter-spacing:0.05em; margin-bottom:0.3rem; color:rgba(0,0,0,0.35); transition:color 0.65s var(--ease-out); }
+.dream-step-body p { font-size:1rem; color:rgba(0,0,0,0.35); margin:0; transition:color 0.65s var(--ease-out); }
+.dream-step.seen .dream-step-body .step-who { color:var(--black); }
+.dream-step.seen .dream-step-body p { color:#222; }
+@media (prefers-reduced-motion:reduce) {
+  .dream-node, .dream-step-body, .dream-step-body .step-who, .dream-step-body p { transition:none; }
+  .dream-step-body { opacity:1; transform:none; }
+  .dream-step-body .step-who, .dream-step-body p { color:inherit; }
+}
+
+/* ===== Value Receipts ===== */
+.receipt-row { display:flex; gap:1.4rem; flex-wrap:wrap; justify-content:center; margin:1.5rem 0 2rem; padding:0.4rem; }
+.receipt-card {
+  position:relative; flex:1 1 210px; max-width:250px; min-width:190px;
+  background:var(--white); padding:1.5rem 1.25rem 1.35rem;
+  box-shadow:0 10px 22px rgba(0,0,0,0.14), 0 2px 5px rgba(0,0,0,0.08);
+  cursor:pointer; overflow:hidden;
+  clip-path: polygon(0% 7px,4% 0,8% 7px,12% 0,16% 7px,20% 0,24% 7px,28% 0,32% 7px,36% 0,40% 7px,44% 0,48% 7px,52% 0,56% 7px,60% 0,64% 7px,68% 0,72% 7px,76% 0,80% 7px,84% 0,88% 7px,92% 0,96% 7px,100% 0,100% 100%,0% 100%);
+  transition:transform 0.35s var(--spring), box-shadow 0.3s var(--ease-out);
+}
+.receipt-card:nth-child(1) { transform:rotate(-1.4deg); }
+.receipt-card:nth-child(2) { transform:rotate(0.8deg); }
+.receipt-card:nth-child(3) { transform:rotate(-0.6deg); }
+.receipt-card:hover, .receipt-card.open, .receipt-card:focus-visible {
+  transform:translateY(-6px) rotate(0deg) scale(1.03); box-shadow:0 20px 36px rgba(0,0,0,0.22); z-index:5; outline:none;
+}
+.receipt-eyebrow { font-family:'SFMono-Regular',Consolas,monospace; font-size:0.7rem; letter-spacing:0.1em; color:rgba(0,0,0,0.4); padding-bottom:0.5rem; margin-bottom:0.4rem; border-bottom:1px dashed rgba(0,0,0,0.22); direction:ltr; text-align:center; }
+.receipt-stamp-zone { height:74px; display:flex; align-items:center; justify-content:center; }
+.receipt-title { font-weight:800; font-size:1.04rem; color:var(--black); text-align:center; margin-top:0.5rem; }
+.receipt-desc { max-height:0; overflow:hidden; opacity:0; font-size:0.85rem; line-height:1.6; color:#333; text-align:center; transition:max-height 0.45s var(--ease-out), opacity 0.3s var(--ease-out), margin-top 0.45s var(--ease-out); }
+.receipt-card:hover .receipt-desc, .receipt-card.open .receipt-desc { max-height:260px; opacity:1; margin-top:0.75rem; }
+.receipt-stamp {
+  position:relative; width:74px; height:74px; border-radius:50%; flex-shrink:0;
+  border:3px solid var(--black); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
+  font-family:'Heebo',sans-serif; font-weight:800; font-size:0.7rem; color:var(--black); text-align:center; line-height:1.2;
+  transform:rotate(-14deg) scale(0); opacity:0;
+  transition:transform 0.4s var(--spring), opacity 0.25s var(--ease-out);
+}
+.receipt-stamp::after { content:''; position:absolute; inset:5px; border:1px solid var(--black); border-radius:50%; }
+.receipt-card:hover .receipt-stamp, .receipt-card.open .receipt-stamp { transform:rotate(-14deg) scale(1); opacity:0.85; }
+@media (max-width:640px) { .receipt-card:nth-child(n) { transform:none; } .receipt-card:hover, .receipt-card.open { transform:translateY(-4px) scale(1.02); } }
+@media (prefers-reduced-motion:reduce) {
+  .receipt-card, .receipt-desc, .receipt-stamp { transition:none; }
+  .receipt-card:nth-child(n) { transform:none; }
+}
+
+/* ===== Callout / inline code / quote ===== */
+.callout { padding:0.9rem 1.1rem; border-radius:12px; margin:0.75rem 0; font-size:0.88rem; display:flex; gap:0.7rem; align-items:flex-start; }
+.callout-icon-img { width:36px; height:36px; flex-shrink:0; object-fit:contain; }
+.callout.warning, .callout.tip { background:rgba(142,139,136,0.12); border:1px dashed #000000; box-shadow:none; color:#2c2c2a; }
+.callout strong  { font-weight:700; }
+.callout ul { margin-top:6px; padding-right:16px; display:flex; flex-direction:column; gap:3px; }
+.callout-body { flex:1; }
+.ci { font-family:'SFMono-Regular',Consolas,monospace; font-size:0.8rem; background:#f0e8e4; padding:2px 7px; border-radius:5px; color:#2d2420; direction:ltr; display:inline-block; }
+.quote-block { border-right:3px solid var(--amber); background:#fff; padding:0.8rem 1.1rem; border-radius:10px; font-style:italic; font-size:0.87rem; color:#333; margin:0.6rem 0; }
+
+/* ===== Prompt Block ===== */
+.prompt-block {
+  position:relative; background:#231d1a; color:#fbf6f1;
+  padding:1.2rem 1.3rem 1rem; border-radius:12px; margin:0.75rem 0 0.5rem;
+  font-size:0.87rem; line-height:1.85; direction:rtl; text-align:right;
+  max-height:340px; overflow-y:auto;
+}
+.prompt-text { white-space:pre-wrap; display:block; }
+.prompt-copy-btn {
+  position:sticky; float:left; top:0.65rem;
+  display:flex; align-items:center; gap:5px;
+  background:rgba(255,255,255,0.14); border:1px solid rgba(255,255,255,0.3); color:#fbf6f1;
+  border-radius:50px; padding:5px 13px; font-size:0.72rem; font-family:'Heebo',sans-serif;
+  cursor:pointer; transition:background 0.2s, transform 0.15s var(--spring);
+  margin-bottom:0.6rem; margin-left:0.2rem;
+}
+.prompt-copy-btn [data-lucide] { width:13px; height:13px; }
+.prompt-copy-btn:hover { background:rgba(255,255,255,0.24); }
+.prompt-copy-btn.copied { background:var(--amber); color:var(--black); border-color:var(--amber); }
+
+/* ===== Flip Cards ===== */
+.flip-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:1.1rem; margin:0.75rem 0; }
+.flip-card { perspective:1000px; height:200px; cursor:pointer; }
+.flip-card-inner { position:relative; width:100%; height:100%; transition:transform 0.6s var(--ease-out); transform-style:preserve-3d; }
+.flip-card:hover .flip-card-inner, .flip-card:focus-visible .flip-card-inner, .flip-card.flipped .flip-card-inner { transform:rotateY(-180deg); }
+.flip-card:focus-visible { outline: 3px solid var(--amber); outline-offset: 4px; border-radius: 16px; }
+.flip-front, .flip-back { position:absolute; inset:0; backface-visibility:hidden; border-radius:16px; padding:1.3rem; display:flex; flex-direction:column; justify-content:center; }
+.flip-front { background:#fff; border:1.5px solid rgba(187,210,60,0.55); box-shadow:0 2px 10px rgba(0,0,0,0.04); }
+.flip-front .flip-icon {
+  width:34px; height:34px; margin-bottom:0.6rem;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M78,42 C78,58 64,70 48,70 C29,70 15,55 15,37 C15,21 28,9 45,10 C60,11 71,22 70,36 C69,48 59,56 49,55 C41,54 35,47 36,39' fill='none' stroke='%23E0729B' stroke-width='9' stroke-linecap='round'/%3E%3Cline x1='80' y1='12' x2='88' y2='4' stroke='%23E0729B' stroke-width='7' stroke-linecap='round'/%3E%3Cline x1='90' y1='28' x2='99' y2='22' stroke='%23E0729B' stroke-width='7' stroke-linecap='round'/%3E%3Cline x1='85' y1='44' x2='95' y2='40' stroke='%23E0729B' stroke-width='7' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-size:contain; background-position:right center;
+}
+.flip-front h4 { font-size:1.05rem; font-weight:700; margin-bottom:0.3rem; color:var(--black); }
+.flip-front p { font-size:0.85rem; color:#555; line-height:1.5; }
+.flip-back { transform:rotateY(180deg); background:var(--black); color:#fff; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.18); font-size:0.87rem; line-height:1.6; overflow-y:auto; }
+.flip-hint { font-size:0.72rem; color:var(--gray); margin-top:auto; }
+
+/* ===== Card Fan (hand of cards) ===== */
+.card-fan-wrap { display:flex; justify-content:center; margin:1.5rem 0 3rem; }
+.card-fan { position:relative; width:100%; max-width:600px; height:250px; }
+.fan-card {
+  position:absolute; top:10px; left:50%; width:180px; height:220px;
+  margin-left:-90px; padding:1.35rem 1.25rem; border-radius:18px;
+  display:flex; flex-direction:column; gap:0.55rem;
+  box-shadow:0 8px 22px rgba(0,0,0,0.14); border:1px solid rgba(0,0,0,0.06);
+  cursor:pointer; transition:transform 0.4s var(--spring), box-shadow 0.3s var(--ease-out);
+}
+.fan-card h4 { font-size:1.05rem; font-weight:800; line-height:1.3; }
+.fan-card p  { font-size:0.87rem; line-height:1.55; }
+.fan-card.c1 { background:var(--amber);     color:var(--black); transform:translateX(-220px) rotate(-10deg); z-index:1; }
+.fan-card.c2 { background:#f0e8e4; color:#2d2420; transform:translateX(-75px)  rotate(-3deg);  z-index:2; }
+.fan-card.c3 { background:var(--black);     color:var(--offwhite); transform:translateX(70px) rotate(4deg);   z-index:3; }
+.fan-card.c4 { background:var(--white);     color:var(--black); transform:translateX(215px) rotate(11deg); border:1px solid rgba(0,0,0,0.12); z-index:4; }
+.fan-card:hover, .fan-card:focus-visible { box-shadow:0 16px 36px rgba(0,0,0,0.22); z-index:10; }
+.fan-card.c1:hover, .fan-card.c1:focus-visible { transform:translateX(-110px) translateY(-30px) rotate(0deg) scale(1.16); }
+.fan-card.c2:hover, .fan-card.c2:focus-visible { transform:translateX(-35px)  translateY(-30px) rotate(0deg) scale(1.16); }
+.fan-card.c3:hover, .fan-card.c3:focus-visible { transform:translateX(35px)   translateY(-30px) rotate(0deg) scale(1.16); }
+.fan-card.c4:hover, .fan-card.c4:focus-visible { transform:translateX(110px)  translateY(-30px) rotate(0deg) scale(1.16); }
+@media (max-width:640px) {
+  .card-fan { height:auto; }
+  .fan-card { position:static; margin:0.6rem auto; transform:none !important; width:88%; max-width:320px; height:auto; min-height:140px; }
+  .fan-card:hover, .fan-card:focus-visible { transform:scale(1.03) !important; }
+}
+
+/* ===== Doc Stack (files converging into CLAUDE.md) ===== */
+.doc-stack-wrap { display:flex; justify-content:center; margin:1.5rem 0 3rem; }
+.doc-stack { position:relative; width:100%; max-width:660px; height:560px; }
+.doc-card {
+  position:absolute; top:0; left:50%; width:190px; height:170px;
+  margin-left:-95px; padding:1.2rem 1.15rem 1.1rem; border-radius:14px;
+  display:flex; flex-direction:column; gap:0.45rem;
+  background:#f0e8e4; color:#2d2420;
+  box-shadow:0 6px 16px rgba(0,0,0,0.12); border:1px solid rgba(0,0,0,0.06);
+  cursor:pointer; transition:transform 0.4s var(--spring), box-shadow 0.3s var(--ease-out);
+}
+.doc-card::before { content:''; position:absolute; top:0; right:0; left:0; height:6px; border-radius:14px 14px 0 0; background:var(--tab-color, var(--amber)); }
+.doc-card h4 { font-size:1rem; font-weight:800; line-height:1.3; direction:ltr; text-align:right; }
+.doc-card p  { font-size:0.83rem; line-height:1.5; }
+.doc-card.d1 { --tab-color:var(--amber);  transform:translate(-130px,0px)   rotate(-3deg); z-index:1; }
+.doc-card.d2 { --tab-color:var(--secondary); transform:translate(-45px,70px)  rotate(2deg);  z-index:2; }
+.doc-card.d3 { --tab-color:var(--gray);   transform:translate(45px,140px)  rotate(-2deg); z-index:3; }
+.doc-card.d4 { --tab-color:var(--black);  transform:translate(130px,210px) rotate(3deg);  z-index:4; }
+.doc-card:hover, .doc-card:focus-visible { box-shadow:0 16px 34px rgba(0,0,0,0.2); z-index:20; }
+.doc-card.d1:hover, .doc-card.d1:focus-visible { transform:translate(-45px,-30px) rotate(0deg) scale(1.14); }
+.doc-card.d2:hover, .doc-card.d2:focus-visible { transform:translate(-15px,40px)  rotate(0deg) scale(1.14); }
+.doc-card.d3:hover, .doc-card.d3:focus-visible { transform:translate(15px,110px)  rotate(0deg) scale(1.14); }
+.doc-card.d4:hover, .doc-card.d4:focus-visible { transform:translate(45px,180px) rotate(0deg) scale(1.14); }
+.doc-card.hub {
+  width:315px; height:225px; margin-left:-157.5px; padding:1.8rem 2rem;
+  background:var(--black); color:var(--offwhite); border:none;
+  transform:translate(0,280px) scale(1); z-index:10;
+  box-shadow:0 14px 30px rgba(0,0,0,0.28);
+}
+.doc-card.hub h4 { font-size:1.2rem; }
+.doc-card.hub p  { font-size:0.92rem; }
+.doc-card.hub::before { background:var(--amber); height:8px; }
+.doc-card.hub h4 { color:var(--offwhite); }
+.doc-card.hub:hover, .doc-card.hub:focus-visible { transform:translate(0,265px) scale(1.06); z-index:20; box-shadow:0 20px 40px rgba(0,0,0,0.32); }
+@media (max-width:640px) {
+  .doc-stack { height:auto; }
+  .doc-card { position:static; margin:0.6rem auto; transform:none !important; width:88%; max-width:320px; height:auto; min-height:120px; }
+  .doc-card.hub { width:88%; max-width:320px; height:auto; }
+  .doc-card:hover, .doc-card:focus-visible, .doc-card.hub:hover, .doc-card.hub:focus-visible { transform:scale(1.03) !important; }
+}
+
+/* ===== Concept cards (הידעת) ===== */
+.concept-wrap { margin:1rem 0; display:flex; justify-content:center; }
+.concept-card { perspective:1000px; width:100%; max-width:440px; height:132px; cursor:pointer; margin:0 auto; }
+.concept-card-inner { position:relative; width:100%; height:100%; transition:transform 0.6s var(--ease-out); transform-style:preserve-3d; }
+.concept-card:hover .concept-card-inner, .concept-card:focus-visible .concept-card-inner, .concept-card.flipped .concept-card-inner { transform:rotateY(-180deg); }
+.concept-card:focus-visible { outline: 3px solid var(--amber); outline-offset: 4px; border-radius: 16px; }
+.concept-front, .concept-back { position:absolute; inset:0; backface-visibility:hidden; border-radius:16px; padding:1.15rem 1.35rem; display:flex; flex-direction:column; justify-content:center; }
+.concept-front { background:rgba(253,211,221,0.42); border:1.5px solid var(--secondary); box-shadow:0 4px 20px rgba(0,0,0,0.08); align-items:center; text-align:center; }
+.concept-eyebrow { font-size:1.265rem; font-weight:800; letter-spacing:0.02em; color:var(--black); margin-bottom:0.5rem; }
+.eyebrow-letter { display:inline-block; opacity:0; animation:eyebrowType 2.4s ease-in-out infinite; }
+@keyframes eyebrowType { 0% { opacity:0; } 3% { opacity:1; } 70% { opacity:1; } 82% { opacity:0; } 100% { opacity:0; } }
+@media (prefers-reduced-motion:reduce) { .eyebrow-letter { animation:none; opacity:1; } }
+.concept-term { font-family:'Rubik',sans-serif; font-size:1.28rem; font-weight:800; color:var(--black); direction:ltr; text-align:center; }
+.concept-term.term-marker {
+  font-family:'Kalam',cursive; font-weight:700; font-size:1.4rem;
+  display:inline-block; transform:rotate(-1.5deg);
+  background:var(--amber); color:var(--black);
+  padding:2px 12px; border-radius:4px 14px 6px 12px;
+}
+.concept-hint { font-size:0.7rem; color:rgba(0,0,0,0.55); margin-top:0.6rem; }
+.concept-back { transform:rotateY(180deg); background:#fff; border:1.5px solid rgba(187,210,60,0.55); box-shadow:0 4px 16px rgba(0,0,0,0.08); font-size:0.86rem; line-height:1.6; color:#2d2420; overflow-y:auto; }
+.concept-row { display:flex; flex-wrap:wrap; gap:0.9rem; margin:1rem 0; }
+.concept-row .concept-card { flex:1; min-width:220px; }
+
+/* ===== Accordion ===== */
+.settings-accordion { display:flex; flex-direction:column; gap:0.6rem; margin-top:0.5rem; }
+.settings-item { border:1.5px solid rgba(0,0,0,0.1); border-radius:14px; background:#fff; overflow:hidden; transition:box-shadow 0.2s; }
+.settings-item.open { box-shadow:0 4px 16px rgba(0,0,0,0.06); }
+.settings-item-head { display:flex; align-items:center; gap:0.7rem; padding:0.9rem 1.1rem; cursor:pointer; user-select:none; background:none; border:none; width:100%; font-family:'Heebo',sans-serif; text-align:right; color:var(--black); }
+.settings-item-head:hover { background:rgba(0,0,0,0.03); }
+.settings-icon { width:34px; height:34px; border-radius:50%; background:var(--secondary); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.settings-icon [data-lucide] { width:17px; height:17px; stroke-width:1.8; }
+
+/* ===== Screenshots ===== */
+.screenshot-frame { display:block; border-radius:16px; overflow:hidden; border:1px solid rgba(0,0,0,0.1); box-shadow:0 4px 20px rgba(0,0,0,0.08); margin:0.9rem 0 0.35rem; transition:transform 0.25s var(--spring), box-shadow 0.25s; }
+.screenshot-frame:hover { transform:translateY(-3px); box-shadow:0 12px 32px rgba(0,0,0,0.14); }
+.screenshot-frame img { display:block; width:100%; height:auto; }
+.screenshot-caption { font-size:0.78rem; color:var(--gray); margin:0 0 1rem; display:flex; align-items:center; gap:6px; }
+.screenshot-caption [data-lucide] { width:13px; height:13px; color:var(--amber); flex-shrink:0; }
+.screenshot-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:0.9rem 0 0.35rem; }
+.screenshot-row .screenshot-frame { margin:0; }
+@media (max-width:640px) { .screenshot-row { grid-template-columns:1fr; } }
+
+/* ===== Split row (plain text column + boxed column side by side) ===== */
+.split-row { display:grid; grid-template-columns:1fr 1fr; gap:1.75rem; align-items:start; margin:0.5rem 0 1.25rem; }
+.split-row .plain-col p { font-size:1rem; color:#222; margin:0 0 0.6rem; }
+.split-row .plain-col p:last-child { margin-bottom:0; }
+.split-row .plain-col.plain-quote p { font-style:italic; color:#333; font-size:0.95rem; }
+.split-row .callout, .split-row .step-card { margin:0; height:100%; }
+@media (max-width:768px) { .split-row { grid-template-columns:1fr; gap:1rem; } }
+
+/* ===== Mini carousel (screenshot sequences) ===== */
+.mini-carousel { margin:0.9rem auto 0.5rem; max-width:456px; }
+.mini-carousel-track { position:relative; }
+.mini-carousel-slide { display:none; }
+.mini-carousel-slide.active { display:block; animation:carouselIn 0.35s var(--ease-out); }
+.mini-carousel-slide .screenshot-frame { margin-bottom:0.35rem; }
+@keyframes carouselIn { from { opacity:0; transform:translateX(12px); } to { opacity:1; transform:translateX(0); } }
+.mini-carousel-nav { display:flex; align-items:center; justify-content:center; gap:1.1rem; margin-top:0.7rem; }
+.mini-carousel-btn { width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(0,0,0,0.12); background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background 0.15s, transform 0.15s var(--spring); color:var(--black); flex-shrink:0; }
+.mini-carousel-btn:hover:not(:disabled) { background:var(--offwhite); transform:scale(1.08); }
+.mini-carousel-btn:disabled { opacity:0.25; cursor:default; }
+.mini-carousel-btn [data-lucide], .mini-carousel-btn svg { width:16px; height:16px; }
+.mini-carousel-progress { font-size:0.8rem; font-weight:700; color:var(--gray); min-width:96px; text-align:center; }
+.mini-carousel-dots { display:flex; gap:6px; justify-content:center; margin-top:0.55rem; }
+.mini-carousel-dot { width:6px; height:6px; border-radius:50%; background:rgba(0,0,0,0.15); transition:background 0.2s, transform 0.2s var(--spring); }
+.mini-carousel-dot.active { background:var(--amber); transform:scale(1.4); }
+.settings-item-title { font-weight:700; font-size:0.98rem; flex:1; }
+.settings-chevron { width:18px; height:18px; color:var(--gray); flex-shrink:0; transition:transform 0.25s var(--ease-out); }
+.settings-item.open .settings-chevron { transform:rotate(180deg); }
+.settings-item-panel { max-height:0; overflow:hidden; transition:max-height 0.35s var(--ease-out); }
+.settings-item.open .settings-item-panel { max-height:1200px; }
+.settings-item-panel-inner { padding:0 1.1rem 1.1rem; border-top:1px solid rgba(0,0,0,0.06); }
+.settings-tab-sub { font-size:0.85rem; color:var(--gray); margin:0.85rem 0 0.9rem; }
+.settings-row { display:flex; align-items:flex-start; gap:0.65rem; padding:0.55rem 0; border-top:1px solid rgba(0,0,0,0.05); }
+.settings-row:first-of-type { border-top:none; }
+.settings-check { width:20px; height:20px; border-radius:6px; background:var(--amber); display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px; }
+.settings-check svg { width:12px; height:12px; stroke:var(--black); stroke-width:3; fill:none; }
+.settings-row-body { flex:1; }
+.settings-row-title { font-weight:700; font-size:0.88rem; }
+.settings-row-desc { font-size:0.83rem; color:#555; margin-top:0.15rem; }
+
+/* ===== Reveal ===== */
+.reveal { opacity:0; transform:translateY(18px); transition:opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out); }
+.reveal.visible { opacity:1; transform:translateY(0); }
+
+/* ===== Bottom Nav ===== */
+.bottom-nav {
+  position:fixed; bottom:0; left:0; right:0; z-index:200;
+  display:none; align-items:center; justify-content:space-between;
+  padding:0.9rem 2rem;
+  background:rgba(255,255,255,0.97);
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  border-top:1px solid rgba(0,0,0,0.06);
+}
+.bottom-nav.visible { display:flex; }
+.nav-btn { display:flex; align-items:center; gap:6px; padding:10px 28px; border-radius:50px; font-family:'Heebo',sans-serif; font-size:0.88rem; font-weight:600; cursor:pointer; border:2px solid var(--black); background:none; color:var(--black); transition:transform 0.15s var(--spring), box-shadow 0.2s; }
+.nav-btn.primary { background:var(--amber); color:var(--black); border-color:var(--amber); }
+.nav-btn:hover, .nav-btn:focus-visible { box-shadow:0 4px 12px rgba(0,0,0,0.12); }
+.nav-btn:active { transform:scale(0.97); }
+.nav-btn.hidden { visibility:hidden; }
+
+/* ===== Checklist ===== */
+.checklist-progress { font-size:0.83rem; color:var(--primary); font-weight:600; margin-bottom:0.75rem; }
+.checklist { display:flex; flex-direction:column; gap:0.45rem; margin:0.5rem 0; }
+.check-item { display:flex; align-items:flex-start; gap:0.7rem; padding:0.8rem 1rem; border:1px solid rgba(0,0,0,0.06); border-radius:12px; cursor:pointer; transition:opacity 0.3s, background 0.15s; }
+.check-item:hover { background:var(--offwhite); }
+.check-item.checked { opacity:0.5; }
+.check-box { width:22px; height:22px; border:2px solid rgba(0,0,0,0.14); border-radius:6px; flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:background 0.2s, border-color 0.2s; margin-top:2px; }
+.check-item.checked .check-box { background:var(--primary); border-color:var(--primary); }
+.check-box svg { width:14px; height:14px; stroke:#fff; stroke-width:3; fill:none; opacity:0; transition:opacity 0.2s; }
+.check-item.checked .check-box svg { opacity:1; }
+.check-content { font-size:0.91rem; color:#2d2420; }
+.static-checklist { display:flex; flex-direction:column; gap:0.45rem; margin:0.5rem 0; }
+.static-check-item { display:flex; align-items:flex-start; gap:0.7rem; padding:0.8rem 1rem; border:1px solid rgba(0,0,0,0.06); border-radius:12px; cursor:pointer; transition:opacity 0.3s, background 0.15s; }
+.static-check-item:hover { background:var(--offwhite); }
+.static-check-item.checked { opacity:0.5; }
+.static-check-item.checked .check-box { background:var(--primary); border-color:var(--primary); }
+.static-check-item.checked .check-box svg { opacity:1; }
+
+/* ===== Completion ===== */
+.completion { position:relative; overflow:hidden; display:none; min-height:100vh; align-items:center; justify-content:flex-start; text-align:center; padding:2rem; padding-top:calc(var(--header-h) + 2rem); background:#f2efe8; }
+.completion.visible { display:flex; flex-direction:column; }
+.completion-video { position:absolute; top:var(--header-h); left:50%; transform:translateX(-50%); height:calc(100% - var(--header-h)); width:auto; max-width:none; object-fit:contain; object-position:center center; z-index:0; }
+.completion-mascot { position:absolute; top:50%; transform:translateY(-50%); width:min(26vw, 340px); height:auto; z-index:1; }
+.completion-mascot.left  { left:2rem; }
+.completion-mascot.right { right:2rem; }
+.completion-content { position:relative; z-index:2; max-width:520px; }
+.completion-goodluck { font-size:clamp(2.1rem,5.5vw,3.2rem); font-weight:900; color:#fff; margin-top:1.25rem; }
+.completion-goodluck .wave-letter { display:inline-block; opacity:0; text-shadow:0 1px 0 rgba(0,0,0,0.55), 0 3px 6px rgba(0,0,0,0.5), 0 8px 20px rgba(0,0,0,0.4); animation:waveIn 0.7s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+.completion-goodluck .wave-letter:nth-child(1) { animation-delay:0.05s; }
+.completion-goodluck .wave-letter:nth-child(2) { animation-delay:0.10s; }
+.completion-goodluck .wave-letter:nth-child(3) { animation-delay:0.15s; }
+.completion-goodluck .wave-letter:nth-child(4) { animation-delay:0.20s; }
+.completion-goodluck .wave-letter:nth-child(5) { animation-delay:0.25s; }
+.completion-goodluck .wave-letter:nth-child(6) { animation-delay:0.30s; }
+.completion-goodluck .wave-letter:nth-child(7) { animation-delay:0.35s; }
+@keyframes waveIn { 0% { opacity:0; transform:translateY(26px) scale(0.7); } 55% { opacity:1; transform:translateY(-10px) scale(1.08); } 80% { transform:translateY(4px) scale(0.98); } 100% { opacity:1; transform:translateY(0) scale(1); } }
+.completion-actions { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+.completion-btn { display:flex; align-items:center; gap:7px; padding:12px 30px; border-radius:50px; font-family:'Heebo',sans-serif; font-size:0.97rem; font-weight:600; cursor:pointer; border:2px solid var(--black); text-decoration:none; transition:transform 0.15s var(--spring), box-shadow 0.2s; }
+.completion-btn.secondary { background:none; color:var(--primary); border-color:var(--primary); }
+.completion-btn:hover, .completion-btn:focus-visible { box-shadow:0 4px 16px rgba(0,0,0,0.12); transform:translateY(-1px); }
+
+/* ===== Icons ===== */
+[data-lucide] { width:20px; height:20px; stroke-width:1.8; vertical-align:middle; }
+.icon-sm  { width:16px; height:16px; }
+.icon-lg  { width:28px; height:28px; }
+
+/* ===== Skip link ===== */
+.skip-link {
+  position:absolute; right:1rem; top:-100px; z-index:1000;
+  background:var(--black); color:var(--white); padding:10px 20px; border-radius:8px;
+  transition:top 0.2s;
+}
+.skip-link:focus { top:1rem; }
+
+/* ===== Responsive ===== */
+@media (max-width:768px) {
+  :root { --header-h:52px; }
+  .logo-bar-center { max-width:218px; }
+  .main-content { padding:1.5rem 1rem 6rem; }
+  .bottom-nav { padding:0.8rem 1.1rem; }
+  .menu-toggle { display:flex; }
+  .sidebar {
+    position:fixed; top:var(--header-h); left:auto; right:0; bottom:0; height:auto;
+    width:82vw; max-width:300px; z-index:400;
+    transform:translateX(100%); transition:transform 0.3s var(--ease-out);
+    box-shadow:-8px 0 28px rgba(0,0,0,0.14);
+  }
+  .sidebar.open { transform:translateX(0); }
+  .sidebar-backdrop.open { display:block; }
+  .legend-strip { gap:0.7rem; }
+  .prompt-block { max-height:260px; }
+  .completion-mascot { width:min(18vw, 130px); }
+}
+@media (prefers-reduced-motion:reduce) {
+  *, *::before, *::after { animation-duration:0.01ms !important; transition-duration:0.01ms !important; }
+}
+</style>
+<link id="he-fonts" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700&amp;family=Antonio:wght@400;700&amp;family=Kalam:wght@400;700&amp;display=swap"><style id="he-fonts-local">@font-face{font-family:'OH Yael Leibushor';src:url('OHYaelLeibushor1.0-Regular.otf') format('opentype');font-display:swap}</style></head>
+<body>
+
+<a href="#mainContent" class="skip-link">דלגו לתוכן הראשי</a>
+
+<!-- ===== HERO ===== -->
+<section class="hero animate" id="hero" style="opacity: 0; transition: opacity 0.4s; display: none;">
+  <div class="logo-bar">
+    <img class="logo-bar-center" src="assets/images/LogoBanner.svg" alt="איריס פלד">
+  </div>
+  <video class="hero-video" autoplay="" muted="" loop="" playsinline="" preload="auto" aria-hidden="true">
+    <source src="assets/videos/kling_intro.mp4" type="video/mp4">
+  </video>
+  <div class="hero-overlay"></div>
+  <div class="hero-side-fade left"></div>
+  <div class="hero-side-fade right"></div>
+  <div class="hero-content" style="top: -27.33px;">
+    <div class="hero-badge"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="brain-cog" aria-hidden="true" class="lucide lucide-brain-cog icon-sm"><path d="m10.852 14.772-.383.923"></path><path d="m10.852 9.228-.383-.923"></path><path d="m13.148 14.772.382.924"></path><path d="m13.531 8.305-.383.923"></path><path d="m14.772 10.852.923-.383"></path><path d="m14.772 13.148.923.383"></path><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 0 0-5.63-1.446 3 3 0 0 0-.368 1.571 4 4 0 0 0-2.525 5.771"></path><path d="M17.998 5.125a4 4 0 0 1 2.525 5.771"></path><path d="M19.505 10.294a4 4 0 0 1-1.5 7.706"></path><path d="M4.032 17.483A4 4 0 0 0 11.464 20c.18-.311.892-.311 1.072 0a4 4 0 0 0 7.432-2.516"></path><path d="M4.5 10.291A4 4 0 0 0 6 18"></path><path d="M6.002 5.125a3 3 0 0 0 .4 1.375"></path><path d="m9.228 10.852-.923-.383"></path><path d="m9.228 13.148-.923.383"></path><circle cx="12" cy="12" r="3"></circle></svg> לומדה אינטראקטיבית · איריס פלד · 2026</div>
+    <h1><span class="hero-title-eyebrow">Memory Playbook</span><br>מוח חכם לקלוד קוד</h1>
+    <p class="hero-subtitle">איך בונים לקלוד קוד זיכרון אמיתי, בלי להעמיס עליו</p>
+    <p>שבעה שלבים קצרים, ובסוף הדרך מחכה לכם CLAUDE.md גלובלי משלכם וקטלוג זיכרון מסודר, בלי לאבד מידע בין שיחה לשיחה.</p>
+    <p style="font-size: 0.78rem; margin-bottom: 1.4rem; color: rgba(0, 0, 0, 0.55); font-style: italic; font-weight: 700;">מבוססת על ההרצאה "Learning While You Sleep: Beyond Memory to Dreaming" של Lamis Mukta, מהנדסת סגל טכני באנתרופיק, מ-AI Native DevCon לונדון 2026, על התפתחות זיכרון סוכני ה-AI: משיחה בודדת לזיכרון מתמשך ו"חלימה".</p>
+    <button class="hero-btn" onclick="startTutorial()">בואו נתחיל ←</button>
+  </div>
+</section>
+
+<!-- ===== APP ===== -->
+<div class="app visible" id="app">
+  <div class="logo-bar app-logo-bar">
+    <img class="logo-bar-center" src="assets/images/LogoBanner.svg" alt="איריס פלד">
+    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()" aria-label="פתחו תפריט שלבים" aria-expanded="false"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="menu" aria-hidden="true" class="lucide lucide-menu"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg></button>
+  </div>
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+
+  <div class="app-body">
+    <aside class="sidebar" id="sidebar" aria-label="ניווט בין שלבי הלומדה">
+      <div class="side-progress-track"><div class="side-progress-fill" id="sideProgressFill" style="width: 25%;"></div></div>
+      <div class="side-progress-label" id="sideProgressLabel">2 / 8 שלבים</div>
+
+      <div class="side-steps">
+        <button class="side-step completed" onclick="sideNav(1)"><span class="side-step-num"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="check" aria-hidden="true" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"></path></svg></span><span>למה קלוד לא זוכר</span></button>
+        <button class="side-step active" onclick="sideNav(2)"><span class="side-step-num">2</span><span>מה זה CLAUDE.md</span></button>
+        <button class="side-step" onclick="sideNav(3)"><span class="side-step-num">3</span><span>מערכות הזיכרון</span></button>
+        <button class="side-step" onclick="sideNav(4)"><span class="side-step-num">4</span><span>בונים את הזיכרון</span></button>
+        <button class="side-step" onclick="sideNav(5)"><span class="side-step-num">5</span><span>סקילים</span></button>
+        <button class="side-step" onclick="sideNav(6)"><span class="side-step-num">6</span><span>ניהול מערכת הזיכרון</span></button>
+        <button class="side-step" onclick="sideNav(7)"><span class="side-step-num">7</span><span>מה קורה בקלוד ארגוני</span></button>
+        <button class="side-step" onclick="sideNav(8)"><span class="side-step-num">8</span><span>צ'קליסט סיכום</span></button>
+      </div>
+    </aside>
+
+    <main class="main-content" id="mainContent">
+      <div class="step-container">
+
+        <!-- ===== STEP 1 ===== -->
+        <div class="step" id="step1">
+          <div class="step-header">
+            <span class="step-number">שלב 1</span>
+            <h2 class="step-title">למה קלוד לא <span class="hl-underline">זוכר</span> אתכם</h2>
+            <p class="step-desc">בואו נבין קודם מה בכלל קורה מתחת למכסה המנוע של קלוד, לפני שנבנה פתרון</p>
+          </div>
+
+          <div class="reveal visible">
+            <div class="split-row">
+              <div class="plain-col">
+                <p>תפתחו שיחה חדשה עם קלוד ותבקשו ממנו לכתוב פוסט. הוא יכתוב טוב - אבל בסגנון גנרי, כי הוא לא יודע איך אתם בדרך כלל כותבים, מי הקהל שלכם, מה כבר ניסיתם ומה לא עבד.</p>
+                <p>תסבירו לו הכל, הוא יתקן. מחר, בשיחה חדשה, תצטרכו להסביר שוב מההתחלה. קלוד לא "שוכח" אתכם באופן פעיל, הוא פשוט לא נושא איתו שום דבר משיחה לשיחה, אלא אם בניתם לו משהו שכן נשאר.</p>
+              </div>
+              <div class="callout warning">
+                <img class="callout-icon-img" src="assets/images/Icons  Bell (Notification).svg" alt="שימו לב">
+                <div class="callout-body"><strong>לא להתבלבל:</strong> ב-claude.ai יש הגדרת "Memory" בתפריט ה-Settings, אבל זה זיכרון נפרד לגמרי, ששייך לשיחות הרגילות באתר או באפליקציה. כל מה שכותבים שם לא מגיע ולא משפיע על Claude Code. הזיכרון שנלמד בלומדה הזו, <span class="ci">CLAUDE.md</span> וקבצי הזיכרון הנלווים, הוא מנגנון נפרד לגמרי, ספציפי ל-Claude Code בלבד.</div>
+              </div>
+            </div>
+
+            <div class="section-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="lightbulb" aria-hidden="true" class="lucide lucide-lightbulb icon-sm"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg> אז מה כן עובד</div>
+            <div class="steps-list">
+              <div class="step-card info">
+                <img class="step-type-icon" src="assets/images/מוח ונורה איקון.svg" alt="קלוד מסביר">
+                <div class="step-card-body">
+                  <p>זיכרון, בהקשר של Claude Code, הוא לא יכולת מובנית של המודל - הוא קבצי טקסט רגילים שאתם כותבים (או שקלוד כותב בשבילכם), שקלוד קורא בתחילת השיחה או תוך כדיה.</p>
+                  <p>במקום שהמודל "יזכור" אתכם, אתם בונים לו ארכיון קבוע שהוא יודע לפתוח בכל פעם מחדש. הפעולה הזו, איך הארכיון בנוי, מה נכנס לתוכו, מתי קלוד פותח כל חלק, יש לה שם רשמי.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="concept-wrap">
+              <div class="concept-card" tabindex="0" role="button" aria-label="הידעת: Context Engineering, לחצו לגילוי הפירוש">
+                <div class="concept-card-inner">
+                  <div class="concept-front"><div class="concept-eyebrow">הידעת?</div><div class="concept-term term-marker">Context Engineering</div><div class="concept-hint">העבירו את העכבר לגילוי הפירוש ←</div></div>
+                  <div class="concept-back"><strong>הנדסת קונטקסט</strong> - בניית הארכיון הקבוע שקלוד קורא ממנו: איך הוא בנוי, מה נכנס לתוכו, מתי כל חלק נפתח.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="split-row">
+              <div class="plain-col plain-quote">
+                <p>אינטליגנציה גולמית של המודל, כמה שתהיה חזקה, היא תנאי הכרחי אבל לא מספיק. מודל חזק שמגיע "מהקופסה" לא מכיר אתכם, את סגנון הכתיבה שלכם, את ההעדפות הספציפיות שלכם - וכל עוד אין לו הקשר, הוא לא יכול לצבור ידע או ללמוד מטעויות לאורך זמן, גם אם הוא "חכם" מאוד ברמה הכללית.</p>
+              </div>
+              <div class="callout tip">
+                <img class="callout-icon-img" src="assets/images/Icons  Bell (Notification).svg" alt="שימו לב">
+                <div class="callout-body">הנדסת הקונטקסט היא מה שהופך את אותה אינטליגנציה גולמית לנכס שעובד באמת בשבילכם - בלי לשנות את המודל עצמו, רק את מה שהוא יודע עליכם. בגלל זה קוראים לזיכרון "מכפיל כוח": הוא לא מוסיף חוכמה למודל, הוא מכפיל את התועלת שאתם מקבלים ממנה.</div>
+              </div>
+            </div>
+
+            <div class="concept-wrap">
+              <div class="concept-card" tabindex="0" role="button" aria-label="הידעת: Force Multiplier, לחצו לגילוי הפירוש">
+                <div class="concept-card-inner">
+                  <div class="concept-front"><div class="concept-eyebrow">הידעת?</div><div class="concept-term term-marker">Force Multiplier</div><div class="concept-hint">העבירו את העכבר לגילוי הפירוש ←</div></div>
+                  <div class="concept-back"><strong>מכפיל כוח</strong> - כך קוראים לזיכרון, כי הוא לא מוסיף חוכמה למודל, הוא מכפיל את התועלת שאתם כבר מקבלים ממנה.</div>
+                </div>
+              </div>
+            </div>
+
+            <p class="step-desc" style="margin-top:1.25rem;">אז איך בעצם בונים זיכרון כזה בפועל? בואו נמשיך.</p>
+          </div>
+        </div>
+
+        <!-- ===== STEP 2 ===== -->
+        <div class="step active" id="step2">
+          <div class="step-header">
+            <span class="step-number">שלב 2</span>
+            <h2 class="step-title">בונים לקלוד <span class="hl-underline">מוח חכם</span>, בלי להעמיס עליו</h2>
+            <p class="step-desc"><br></p>
+          </div>
+
+          <div class="reveal visible">
+            <div class="steps-list">
+              <div class="step-card info">
+                <img class="step-type-icon" src="assets/images/מוח ונורה איקון.svg" alt="קלוד מסביר">
+                <div class="step-card-body">
+                  <p>המטרה שלנו: לתת לקלוד "מוח" שמכיר אתכם - מי אתם, במה אתם עוסקים, איך אתם כותבים, מה ההעדפות שלכם.</p>
+                  <p>הנקודה הראשונה שכדאי לדעת על קלוד קוד: בתחילת כל שיחה, בלי יוצא מן הכלל, הוא קורא אוטומטית קובץ אחד ספציפי, <span class="ci">CLAUDE.md</span>, שיושב בתיקיית <span class="ci">.claude</span>.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="callout warning">
+              <img class="callout-icon-img" src="assets/images/Icons  Bell (Notification).svg" alt="שימו לב">
+              <div class="callout-body"><strong>הבעיה:</strong> אם תדחסו לתוך הקובץ הזה את כל מה שקלוד אי פעם צריך לדעת עליכם - מי אתם, איך אתם כותבים, איזה צבעים אתם אוהבים, כל תקלה שאי פעם קרתה, הוא יתנפח. וכיוון שהוא נטען בתחילת כל שיחה, גם כשהמשימה לא קשורה לרוב התוכן שבו, כל העומס הזה נטען שוב ושוב לחינם, ותופס מקום בחלון הקונטקסט שיכול היה לשמש למשימה עצמה. לתופעה הזו יש שם רשמי.</div>
+            </div>
+
+            <div class="concept-wrap">
+              <div class="concept-card" tabindex="0" role="button" aria-label="הידעת: Context Bloat, לחצו לגילוי הפירוש">
+                <div class="concept-card-inner">
+                  <div class="concept-front"><div class="concept-eyebrow">הידעת?</div><div class="concept-term term-marker">Context Bloat</div><div class="concept-hint">העבירו את העכבר לגילוי הפירוש ←</div></div>
+                  <div class="concept-back"><strong>נפיחות הקונטקסט</strong> - כשקובץ שנטען בכל שיחה מכיל יותר מדי, כל שיחה נטענת עם עומס מיותר שתופס מקום בחלון ההקשר לחינם.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="check-circle" aria-hidden="true" class="lucide lucide-check-circle icon-sm"><path d="M21.801 10A10 10 0 1 1 17 3.335"></path><path d="m9 11 3 3L22 4"></path></svg> הפתרון</div>
+            <div class="steps-list">
+              <div class="step-card claude">
+                <img class="step-type-icon" src="assets/images/קלוד עושה.svg" alt="קלוד עושה">
+                <div class="step-card-body">
+                  <p>לא לשים את התוכן עצמו ב-<span class="ci">CLAUDE.md</span>, אלא קטלוג קצר שמפנה אליו. קטלוג כזה (<span class="ci">memory-ref.md</span>) הוא רשימה קצרה בסגנון "יש קובץ על מי אתם, יש קובץ על סגנון הכתיבה, יש קובץ על העיצוב".</p>
+                  <p>הקטלוג נטען בכל שיחה כי הוא זעיר, אבל הקבצים עצמם - המדפים - נפתחים רק כשהמשימה הנוכחית באמת דורשת אותם. לעיקרון הזה יש שם משלו.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="concept-wrap">
+              <div class="concept-card" tabindex="0" role="button" aria-label="הידעת: Progressive Disclosure, לחצו לגילוי הפירוש">
+                <div class="concept-card-inner">
+                  <div class="concept-front"><div class="concept-eyebrow">הידעת?</div><div class="concept-term term-marker">Progressive Disclosure</div><div class="concept-hint">העבירו את העכבר לגילוי הפירוש ←</div></div>
+                  <div class="concept-back"><strong>חשיפה הדרגתית</strong> - חושפים לקלוד רק את מה שהוא צריך, בדיוק כשהוא צריך את זה, ולא רגע לפני.</div>
+                </div>
+              </div>
+            </div>
+
+            <p class="step-desc">נקודה חשובה לגבי המדפים האלה: הם לא מתעדכנים לבד. יש כאן בעצם שני סוגי מדפים, עם שני כללים שונים:</p>
+
+            <div class="settings-accordion">
+              <div class="settings-item open">
+                <button class="settings-item-head" onclick="toggleSettingsItem(this)" aria-expanded="true">
+                  <div class="settings-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="id-card" aria-hidden="true" class="lucide lucide-id-card"><path d="M16 10h2"></path><path d="M16 14h2"></path><path d="M6.17 15a3 3 0 0 1 5.66 0"></path><circle cx="9" cy="11" r="2"></circle><rect x="2" y="5" width="20" height="14" rx="2"></rect></svg></div>
+                  <div class="settings-item-title">מדפי זהות וסגנון</div>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="chevron-down" aria-hidden="true" class="lucide lucide-chevron-down settings-chevron"><path d="m6 9 6 6 6-6"></path></svg>
+                </button>
+                <div class="settings-item-panel">
+                  <div class="settings-item-panel-inner">
+                    <p class="settings-tab-sub">כמו aboutme.md, brandvoice.md, design-system.md, משהו יציב יחסית, יוצרים אותם פעם אחת ורק אם יש שינוי בהעדפות שלנו נשנה אותם. </p>
+                    <div class="settings-row">
+                      <div class="settings-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                      <div class="settings-row-body">
+                        <div class="settings-row-title">משתנה רק כשאתם מבקשים</div>
+                        <div class="settings-row-desc">בלי בקשה מפורשת שלכם לעדכן, הקובץ פשוט יושב בתיקייה כפי שהוא.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="settings-item">
+                <button class="settings-item-head" onclick="toggleSettingsItem(this)" aria-expanded="false">
+                  <div class="settings-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="notebook-pen" aria-hidden="true" class="lucide lucide-notebook-pen"><path d="M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4"></path><path d="M2 6h4"></path><path d="M2 10h4"></path><path d="M2 14h4"></path><path d="M2 18h4"></path><path d="M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"></path></svg></div>
+                  <div class="settings-item-title">מדפי יומן</div>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="chevron-down" aria-hidden="true" class="lucide lucide-chevron-down settings-chevron"><path d="m6 9 6 6 6-6"></path></svg>
+                </button>
+                <div class="settings-item-panel">
+                  <div class="settings-item-panel-inner">
+                    <p class="settings-tab-sub">כמו solutions.md, workwithme.md, inspiration.md, אלו קבצי מסקנות שיתמלאו כתוצאה מתובנות שיתקבלו במהלך העבודה השוטפת שלנו עם קלוד</p>
+                    <div class="settings-row">
+                      <div class="settings-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                      <div class="settings-row-body">
+                        <div class="settings-row-title">"ספרן" ייעודי מעדכן אותם</div>
+                        <div class="settings-row-desc">סקיל שנקרא בסוף שיחה, סורק מה קרה, ומציע תוספות לאישורכם. איך בונים ספרן כזה, נראה בשלב הבא.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="callout tip">
+              <img class="callout-icon-img" src="assets/images/Icons  Bell (Notification).svg" alt="שימו לב">
+              <div class="callout-body">במנוי קלוד ארגוני תוכלו לעדכן בתוך אותה שיחה שבה ביצעתם את העדכון, בניגוד לעדכונים בתהליכים שרצים אחר כך, באופן אוטומטי מחוץ לשיחה עצמה (עליהם נדבר בפרק הסיום), הם נקרא בשם רשמי:</div>
+            </div>
+
+            <div class="concept-wrap">
+              <div class="concept-card" tabindex="0" role="button" aria-label="הידעת: In-band memory, לחצו לגילוי הפירוש">
+                <div class="concept-card-inner">
+                  <div class="concept-front"><div class="concept-eyebrow">הידעת?</div><div class="concept-term term-marker">In-band memory</div><div class="concept-hint">העבירו את העכבר לגילוי הפירוש ←</div></div>
+                  <div class="concept-back"><strong>זיכרון In-band</strong> - עדכון שקורה בתוך אותה שיחה שבה ביקשתם אותו, בניגוד לתהליכים א-סינכרוניים שרצים מחוץ לשיחה.</div>
+                </div>
+              </div>
+            </div>
+
+            <p class="step-desc" style="margin-top:1.25rem;">לפני שנבנה את המדפים בעצמנו, כדאי להכיר עוד משהו חשוב: לקלוד יש כבר מנגנון זיכרון מהסוג הזה, מובנה משלו, שפועל גם בלי שתבנו לו כלום. זה מה שנראה בשלב הבא.</p>
+          </div>
+        </div>
+
+        <!-- ===== STEP 3 ===== -->
+        <div class="step" id="step3">
+          <div class="step-header">
+            <span class="step-number">שלב 3</span>
+            <h2 class="step-title">שתי מערכות <span class="hl-underline">זיכרון</span></h2>
+            <p class="step-desc">מה קלוד כבר עושה לבד, ומה בונים בעצמכם</p>
+          </div>
+
+          <div class="reveal visible">
+            <p class="step-desc">קלוד מתחיל כל שיחה מאפס. הוא לא זוכר מי אתם, מה עשיתם אתמול, או מה החלטתם בשיחה הקודמת. כדי שיזכור דברים בין שיחות, יש
+ל- Claude Code שתי מערכות זיכרון נפרדות, וכדאי להכיר את ההבדל ביניהן: באחת אתם כותבים, בשנייה קלוד כותב לעצמו.</p>
+
+            <div class="steps-list" style="margin-top:1rem;">
+              <div class="step-card user">
+                <img class="step-type-icon" src="assets/images/אתם עושים איקון.svg" alt="אתם עושים">
+                <div class="step-card-body">
+                  <div class="step-who">אתם כותבים</div>
+                  <p><span class="ci">CLAUDE.md</span> - כללים, הוראות והעדפות שאתם רושמים, וקלוד קורא בתחילת כל שיחה. זה מה שלמדנו לבנות בשלב הקודם.</p>
+                </div>
+              </div>
+
+              <div class="step-card claude">
+                <img class="step-type-icon" src="assets/images/קלוד עושה.svg" alt="קלוד עושה">
+                <div class="step-card-body">
+                  <div class="step-who">קלוד כותב</div>
+                  <p><strong>auto memory</strong>, תוך כדי עבודה קלוד רושם הערות שימושיות: פקודות שחזרו, תובנות מדיבוג, העדפות שגילה. הוא מחליט בעצמו מה שווה לזכור, בלי לעצור ולשאול אתכם.</p>
+                  <p class="step-note">אוטונומיה לסוכן להחליט מתי לקרוא, לכתוב ולעדכן זיכרון בזמן אמת. קבצים אלה נשמרים בנתיב <span class="ci">~/.claude/projects/&lt;project&gt;/memory/</span>.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="concept-wrap">
+              <div class="concept-card" tabindex="0" role="button" aria-label="הידעת: Memory Tools, לחצו לגילוי הפירוש">
+                <div class="concept-card-inner">
+                  <div class="concept-front"><div class="concept-eyebrow">הידעת?</div><div class="concept-term term-marker">Memory Tools</div><div class="concept-hint">העבירו את העכבר לגילוי הפירוש ←</div></div>
+                  <div class="concept-back"><strong>כלי זיכרון עצמאיים</strong> - כך נקרא בתיעוד הרשמי מנגנון ה-auto memory: לסוכן יש אוטונומיה להחליט מתי לקרוא, לכתוב ולעדכן זיכרון בזמן אמת.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="callout tip">
+              <img class="callout-icon-img" src="assets/images/Icons  Bell (Notification).svg" alt="שימו לב">
+              <div class="callout-body">שתי המערכות -<span class="ci">CLAUDE.md</span> ו-auto memory - נטענות שתיהן בתחילת כל שיחה.</div>
+            </div>
+
+            <div class="section-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="message-circle" aria-hidden="true" class="lucide lucide-message-circle icon-sm"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"></path></svg> זיכרון יזום, הדרך הפשוטה</div>
+            <p class="step-desc">לא צריך לערוך קבצים ידנית כדי להוסיף ל-auto memory. שתי דרכים מהירות באמצע שיחה:</p>
+            <div class="quote-block">"תזכור שאני תמיד עובדת בעברית בפונט Heebo"</div>
+            <p class="step-desc">או מקלידים <span class="ci"># </span> בתחילת ההודעה ואחריו ההוראה.</p>
+
+            <div class="callout warning">
+              <img class="callout-icon-img" src="assets/images/Icons  Bell (Notification).svg" alt="שימו לב">
+              <div class="callout-body">שתי הדרכים שומרות ל-<strong>auto memory</strong> בלבד. אם אתם רוצים שההוראה תיכנס דווקא ל-<span class="ci">CLAUDE.md</span>, צריך לבקש זאת מפורשות: "תוסיף את זה ל-CLAUDE.md".</div>
+            </div>
+
+            <p class="step-desc" style="margin-top:1rem;">הדרך הפשוטה עובדת, אבל יש לה מחיר: קלוד מחליט לבד מה שווה לשמור, ואתם לא תמיד שולטים בתוכן שנכנס. בשלבים הבאים נבנה גרסה מתקדמת יותר - מדפי זיכרון משלכם, שבהם אתם בוחרים מה יישמר ומאשרים כל פריט לפני שהוא נשמר.</p>
+          </div>
+        </div>
+
+        <!-- ===== STEP 4 ===== -->
+        <div class="step" id="step4">
+          <div class="step-header">
+            <span class="step-number">שלב 4</span>
+            <h2 class="step-title">בונים לקלוד מוח חכם ש<span class="hl-underline">מכיר</span> אתכם</h2>
+            <p class="step-desc">עכשיו כשאתם מכירים את המבנה - הגיע הזמן לבנות אותו בפועל, בשליטה מלאה שלכם</p>
+          </div>
+
+          <div class="reveal visible">
+            <p class="step-desc">זה לא קורה בהודעה אחת. זה תהליך מובנה של כמה שלבים - אבל אל דאגה, קלוד קוד יבנה הכל עבורכם, אתם רק עונים על שאלון שבו הוא מראיין אתכם. בסוף כל שלב הוא מציג טיוטה וממתין לאישור שלכם לפני שהוא יוצר את הקובץ בפועל.</p>
+
+            <div class="section-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="folder-open" aria-hidden="true" class="lucide lucide-folder-open icon-sm"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"></path></svg> שלב הכנה, לפני שמתחילים</div>
+            <div class="steps-list">
+              <div class="step-card user">
+                <img class="step-type-icon" src="assets/images/אתם עושים איקון.svg" alt="אתם עושים">
+                <div class="step-card-body">
+                  <div class="step-who">אתם</div>
+                  <p>צרו תיקייה לנכסים שלכם (למשל <span class="ci">My_Profile</span>) והכניסו אליה שני סוגי חומרים:</p>
+                  <ul class="content-list">
+                    <li>נכסים גרפיים, לוגו, פלטת צבעים, אייקונים או תמונות שכבר משמשים אתכם בפועל לעיצוב</li>
+                    <li>תוכן טקסטואלי - טקסטים שכתבתם ואהבתם (פוסטים, מיילים, סיכומי פגישות), לניתוח סגנון הכתיבה שלכם</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="step-card claude">
+                <img class="step-type-icon" src="assets/images/קלוד עושה.svg" alt="קלוד עושה">
+                <div class="step-card-body">
+                  <div class="step-who">קלוד</div>
+                  <p>מעתיקים את הפרומפט המלא למטה לקלוד קוד וצועדים איתו שלב אחר שלב. בסיום כל שלב קלוד מציג טיוטה של הקובץ שיצר, ורק לאחר אישור - יוצר אותו בפועל בתיקייה שלכם. ממשיכים לשלב הבא רק אחרי אישור.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="callout tip">
+              <img class="callout-icon-img" src="assets/images/Icons  Bell (Notification).svg" alt="שימו לב">
+              <div class="callout-body">איפה יושב הקובץ הגלובלי, Windows: <span class="ci">C:\Users\[שם המשתמש]\.claude\CLAUDE.md</span></div>
+            </div>
+
+            <div class="section-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="clipboard-list" aria-hidden="true" class="lucide lucide-clipboard-list icon-sm"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="M12 11h4"></path><path d="M12 16h4"></path><path d="M8 11h.01"></path><path d="M8 16h.01"></path></svg> הפרומפט להעתקה</div>
+            <div class="prompt-block">
+              <button class="prompt-copy-btn" onclick="copyPrompt(this)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="copy" aria-hidden="true" class="lucide lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg><span>העתק</span></button>
+              <span class="prompt-text">אני רוצה לבנות את קובץ ה-CLAUDE.md הגלובלי שלי, הקובץ שאתה קורא בתחילת כל שיחה שלנו, כך שיהפוך למערכת זיכרון אישית שמכירה אותי ואת דרך העבודה שלי. נעבוד בשלבים. בכל שלב תיצור קובץ אחד לאחר שתראיין אותי, ובסוף השלב תציג לי טיוטה של הקובץ ותיצור אותו רק לאחר אישור שלי. את קבצי התוכן צור בתיקייה [שם התיקייה שלכם].
+
+שלב 1 - קובץ aboutme.md: מי אני, במה אני עובדת, מי קהל היעד אליו אני פונה בדרך כלל, מה הדברים שמאפיינים אותי. שאל אותי שאלות המשך עד שיהיה לך מספיק מידע עליי. אם אני לא יודעת לענות על אחת השאלות תן לי 3 אפשרויות לבחור מתוכן.
+
+שלב 2 - קובץ brandvoice.md: בקש ממני להדביק טקסטים שכתבתי ומביעים את סגנון הכתיבה שלי, נתח מהם את הסגנון שלי, ושאל אותי שאלות השלמה: טון כתיבה - חם או פורמלי, סגנון ניסוח - משפטים קצרים או ארוכים, איך אני פונה לקהל בפתיח ואיך אני מסיימת פניה. שאל שאלות המשך עד לקבלת כל המידע שנדרש לך.
+
+שלב 3 - קובץ design-system.md: בקש ממני את הנתיב לתיקיית הנכסים שהכנתי. הסתכל על הלוגו והקבצים שבה, תלמד מהם פלטת צבעים מדויקת (קודי HEX), ושאל אותי שאלות השלמה: פונטים, סגנון מועדף (נקי, צבעוני, מינימליסטי), מה אסור שיופיע - למשל אימוג'י. כלול בקובץ את הנתיב לתיקייה כדי שתמיד תדע איפה הנכסים שלי.
+
+שלב 4 - צור קובץ memory-ref.md. זה קובץ מראה תוכן לזיכרון: קובץ קצר שמפרט אילו קבצי זיכרון קיימים ומה יש בכל אחד. בתוכו יהיו הפניות לשלושה קבצי יומן נפרדים - workwithme.md (תובנות על סגנון עבודה), solutions.md (פתרונות לתקלות שנפתור בהמשך) ו-inspiration.md (רעיונות שלא מומשו) - צור אותם אבל כרגע ריקים לגמרי, רק עם כותרת והסבר שהם יתמלאו עם הזמן. הבהר בקובץ ש-aboutme.md, brandvoice.md ו-design-system.md מתעדכנים רק כשאבקש ממך זאת במפורש, ואילו שלושת קבצי היומן מיועדים להתמלא מאוחר יותר על ידי סקיל ייעודי.
+
+שלב 5 - צור את קובץ CLAUDE.md הגלובלי בנתיב ~/.claude/CLAUDE.md (אם כבר קיים שם קובץ, הצג לי אותו ושאל אם לעדכן, למזג או להחליף). הקובץ יכלול: מי אני במשפט, והפניה לקבצים בנתיבים המלאים שלהם, עם הוראה מתי לקרוא כל אחד: aboutme.md לפני כל משימה, brandvoice.md לפני כל משימת כתיבה, design-system.md לפני כל תוצר גרפי, memory-ref.md כדי לדעת אילו קבצי זיכרון קיימים ולאן ללכת. בסוף תיצור לי את טיוטת קובץ CLAUDE.md. תבדוק שיצרת את כל הקבצים שביקשתי, שכולם מסוג markdown וכולם בתיקייה שביקשתי. חכה לאישור שלי, ורק אחר כך אמת שכל הקבצים נוצרו.</span>
+            </div>
+
+            <div class="section-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="file-text" aria-hidden="true" class="lucide lucide-file-text icon-sm"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"></path><path d="M14 2v5a1 1 0 0 0 1 1h5"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg> הקבצים שייווצרו</div>
+            <div class="doc-stack-wrap">
+              <div class="doc-stack">
+                <div class="doc-card d1" tabindex="0">
+                  <h4>aboutme.md</h4>
+                  <p>מי אתם, במה אתם עוסקים, מיהו קהל היעד שלכם, מה מאפיין אתכם.</p>
+                </div>
+                <div class="doc-card d2" tabindex="0">
+                  <h4>brandvoice.md</h4>
+                  <p>סגנון הכתיבה שלכם: טון, מבנה משפטים, איך אתם פותחים ומסיימים פנייה.</p>
+                </div>
+                <div class="doc-card d3" tabindex="0">
+                  <h4>design-system.md</h4>
+                  <p>פלטת צבעים, פונטים, סגנון עיצוב מועדף, כולל נתיב לתיקיית הנכסים שלכם.</p>
+                </div>
+                <div class="doc-card d4" tabindex="0">
+                  <h4>memory-ref.md</h4>
+                  <p>קובץ הקטלוג: מפרט אילו קבצי זיכרון קיימים ומה יש בכל אחד, כולל שלושה קבצי יומן ריקים בשלב זה שיתמלאו בפרק על סקילים.</p>
+                </div>
+                <div class="doc-card hub" tabindex="0">
+                  <h4>CLAUDE.md</h4>
+                  <p>הקובץ הגלובלי שמפנה לכל הקבצים למעלה, זה שקלוד קורא בתחילת כל שיחה, ב-<span class="ci" style="background:transparent;color:inherit;padding:0;">~/.claude/CLAUDE.md</span>.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== STEP 5 ===== -->
+        <div class="step" id="step5">
+          <div class="step-header">
+            <span class="step-number">שלב 5</span>
+            <h2 class="step-title"><span class="hl-underline">סקילים</span></h2>
+            <p class="step-desc">תהליך עבודה קבוע שקלוד יכול להפעיל שוב ושוב</p>
+          </div>
+
+          <div class="reveal visible">
+            <div class="steps-list">
+              <div class="step-card info">
+                <img class="step-type-icon" src="assets/images/מוח ונורה איקון.svg" alt="קלוד מסביר">
+                <div class="step-card-body">
+                  <p>סקיל הוא תהליך עבודה קבוע שקלוד יכול להפעיל שוב ושוב. במקום להסביר בכל שיחה מחדש כיצד לבצע משימה חוזרת, יוצרים סקיל שנשמר בתוך תיקייה שבמרכזה קובץ <span class="ci">SKILL.md</span>.</p>
+                  <p>דוגמאות לסקילים:</p>
+                  <ul class="content-list"><li>כתיבת הצעת מחיר.</li><li>יצירת דשבורד ספציפי.</li><li>כתיבת דו"ח מותאם אישית.</li><li>בניית לומדה.</li><li>אריזת שיחה ושמירה לזיכרון.</li></ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="quote-block">דמיינו שאתם קולטים עובד חדש. בלי סקיל, אתם מסבירים לו מחדש בכל בוקר איך לעבוד, מה הסגנון, מה חשוב ומה לא. עם סקיל, הוא כבר קיבל את הנהלים בהתחלה, וזוכר אותם לתמיד. זה עובד לכל תחום: עיצוב, כתיבת תוכן, פיתוח, ניתוח נתונים ועוד.</div>
+
+            <div class="callout tip">
+              <img class="callout-icon-img" src="assets/images/Icons  Bell (Notification).svg" alt="שימו לב">
+              <div class="callout-body"><strong>איך קלוד יודע איזה סקיל להפעיל:</strong> קלוד לא קורא את כל הסקילים המותקנים בכל שיחה, זה בדיוק אותה נפיחות קונטקסט שדיברנו עליה קודם. הוא סורק קודם רק כותרת ותקציר קצר של כל סקיל, "כרטיס ביקור" בראש הקובץ. רק כשהתקציר מתאים למשימה, הוא פותח את קובץ ההוראות המלא. אותה חשיפה הדרגתית, הפעם על סקילים.</div>
+            </div>
+
+            <div class="concept-wrap">
+              <div class="concept-card" tabindex="0" role="button" aria-label="הידעת: Front Matter, לחצו לגילוי הפירוש">
+                <div class="concept-card-inner">
+                  <div class="concept-front"><div class="concept-eyebrow">הידעת?</div><div class="concept-term term-marker">Front Matter</div><div class="concept-hint">העבירו את העכבר לגילוי הפירוש ←</div></div>
+                  <div class="concept-back">"כרטיס הביקור" שבראש כל קובץ סקיל, כותרת ותקציר קצר. זה החלק היחיד שקלוד סורק בכל שיחה, לפני שהוא מחליט אם לפתוח את הקובץ המלא.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="star" aria-hidden="true" class="lucide lucide-star icon-sm"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg> למה להשתמש בסקילים</div>
+            <div class="card-fan-wrap">
+              <div class="card-fan">
+                <div class="fan-card c1" tabindex="0">
+                  <h4>חיסכון בזמן</h4>
+                  <p>קלוד זוכר את תהליך העבודה שלכם, ההעדפות, הסטנדרטים, הכללים. אתם חוסכים דקות של הסברים בכל שיחה.</p>
+                </div>
+                <div class="fan-card c2" tabindex="0">
+                  <h4>עקביות</h4>
+                  <p>כל הפלטים יוצאים באותו סגנון, בכל שיחה, בכל פרויקט. בלי הפתעות ובלי חוסר עקביות.</p>
+                </div>
+                <div class="fan-card c3" tabindex="0">
+                  <h4>מקצועיות</h4>
+                  <p>סקילים רבים נכתבו על ידי מומחים בתחומם, מעצבים, מפתחים, כותבי תוכן. אתם נהנים מהניסיון שלהם בלי לשלם על ייעוץ.</p>
+                </div>
+                <div class="fan-card c4" tabindex="0">
+                  <h4>שימוש חוזר</h4>
+                  <p>מתקינים פעם אחת, והסקיל זמין תמיד, בכל פרויקט ובכל שיחה. אין צורך לעשות שום דבר נוסף.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="folder-open" aria-hidden="true" class="lucide lucide-folder-open icon-sm"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"></path></svg> איפה סקילים נשמרים</div>
+            <div class="steps-list">
+              <div class="step-card info">
+                <img class="step-type-icon" src="assets/images/מוח ונורה איקון.svg" alt="קלוד מסביר">
+                <div class="step-card-body"><p>סקילים נשמרים בתיקייה ספציפית במחשב שלכם. Claude Code קורא מתוכה אוטומטית בכל שיחה.</p><p class="step-note"><span class="ci">.claude/skills</span></p></div>
+              </div>
+            </div>
+
+            <div class="section-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="download" aria-hidden="true" class="lucide lucide-download icon-sm"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path></svg> מקור הסקיל, בונים או מתקינים</div>
+            <p class="step-desc">כל האפשרויות מתחילות מאותה נקודה בממשק, <span class="ci">Customize → Skills → +</span>, ומשם הדרך מתפצלת לפי מה שאתם צריכים.</p>
+
+            <div class="reveal visible">
+              <div class="mini-carousel" data-carousel="skills-flow">
+                <div class="mini-carousel-track">
+                  <div class="mini-carousel-slide active">
+                    <div class="screenshot-frame"><img src="assets/images/screenshots/cropped/skills-panel.png" alt="פאנל הסקילים, נפתח דרך Customize → Skills"></div>
+                    <div class="screenshot-caption"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="mouse-pointer-click" aria-hidden="true" class="lucide lucide-mouse-pointer-click"><path d="M14 4.1 12 6"></path><path d="m5.1 8-2.9-.8"></path><path d="m6 12-1.9 2"></path><path d="M7.2 2.2 8 5.1"></path><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"></path></svg> פותחים את פאנל הסקילים. כאן נמצא כל סקיל שכבר מותקן, ומכאן מתחילה כל דרך להוסיף חדש.</div>
+                  </div>
+                  <div class="mini-carousel-slide">
+                    <div class="screenshot-frame"><img src="assets/images/screenshots/cropped/skills-add-menu.png" alt="תפריט Add עם שלוש האפשרויות: Create with Claude, Write skill instructions, Upload a skill"></div>
+                    <div class="screenshot-caption"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="mouse-pointer-click" aria-hidden="true" class="lucide lucide-mouse-pointer-click"><path d="M14 4.1 12 6"></path><path d="m5.1 8-2.9-.8"></path><path d="m6 12-1.9 2"></path><path d="M7.2 2.2 8 5.1"></path><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"></path></svg> לוחצים על <span class="ci">Add</span> ובוחרים באיזו דרך לבנות.</div>
+                  </div>
+                  <div class="mini-carousel-slide">
+                    <div class="screenshot-frame"><img src="assets/images/screenshots/cropped/skills-create-with-claude.png" alt="פותחים שיחה חדשה ומבקשים מקלוד לבנות סקיל יחד איתכם"></div>
+                    <div class="screenshot-caption"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="sparkles" aria-hidden="true" class="lucide lucide-sparkles"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg> Create with Claude: קלוד מראיין אתכם ובונה את הסקיל בעצמו.</div>
+                  </div>
+                  <div class="mini-carousel-slide">
+                    <div class="screenshot-frame"><img src="assets/images/screenshots/cropped/skills-write-modal.png" alt="חלון Write skill instructions עם שדות שם, תיאור והוראות"></div>
+                    <div class="screenshot-caption"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="pencil" aria-hidden="true" class="lucide lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path><path d="m15 5 4 4"></path></svg> Write skill instructions: ממלאים בעצמכם שם, תיאור והוראות.</div>
+                  </div>
+                  <div class="mini-carousel-slide">
+                    <div class="screenshot-frame"><img src="assets/images/screenshots/cropped/skills-upload-modal.png" alt="חלון Upload skill עם אזור גרירה להעלאת קובץ הסקיל"></div>
+                    <div class="screenshot-caption"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="upload" aria-hidden="true" class="lucide lucide-upload"><path d="M12 3v12"></path><path d="m17 8-5-5-5 5"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path></svg> Upload a skill: קובץ סקיל שכבר קיים אצלכם, גוררים או בוחרים ישירות.</div>
+                  </div>
+                </div>
+                <div class="mini-carousel-nav">
+                  <button class="mini-carousel-btn" onclick="carouselNav('skills-flow',-1)" aria-label="הקודם" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="chevron-right" aria-hidden="true" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6"></path></svg></button>
+                  <span class="mini-carousel-progress">שלב <span class="mini-carousel-current">1</span> מתוך <span class="mini-carousel-total">5</span></span>
+                  <button class="mini-carousel-btn" onclick="carouselNav('skills-flow',1)" aria-label="הבא"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="chevron-left" aria-hidden="true" class="lucide lucide-chevron-left"><path d="m15 18-6-6 6-6"></path></svg></button>
+                </div>
+                <div class="mini-carousel-dots">
+                  <span class="mini-carousel-dot active"></span><span class="mini-carousel-dot"></span><span class="mini-carousel-dot"></span><span class="mini-carousel-dot"></span><span class="mini-carousel-dot"></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-accordion">
+              <div class="settings-item">
+                <button class="settings-item-head" onclick="toggleSettingsItem(this)" aria-expanded="false">
+                  <div class="settings-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="sparkles" aria-hidden="true" class="lucide lucide-sparkles"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg></div>
+                  <div class="settings-item-title">בונים סקיל לבד</div>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="chevron-down" aria-hidden="true" class="lucide lucide-chevron-down settings-chevron"><path d="m6 9 6 6 6-6"></path></svg>
+                </button>
+                <div class="settings-item-panel">
+                  <div class="settings-item-panel-inner">
+                    <p class="settings-tab-sub">בתפריט מופיעות שתי דרכי בנייה: אפשר לתת לקלוד לנהל איתכם ראיון קצר ולהרכיב את הסקיל בעצמו דרך <span class="ci">Create with Claude</span>, או לכתוב את קובץ ההוראות בעצמכם ידנית דרך <span class="ci">Write skill instructions</span>. הרצף למעלה מראה איך זה נראה בפועל.</p>
+
+                    <div class="callout tip">
+                      <img class="callout-icon-img" src="assets/images/Icons  Bell (Notification).svg" alt="שימו לב">
+                      <div class="callout-body">יש גם קיצור דרך נוח: ברגע שקלוד סיים לבצע עבורכם משהו שהצליח, פשוט מבקשים ממנו במילים פשוטות להפוך את זה לסקיל קבוע, והוא יודע לארוז את התהליך בעצמו.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="settings-item">
+                <button class="settings-item-head" onclick="toggleSettingsItem(this)" aria-expanded="false">
+                  <div class="settings-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="folder-open" aria-hidden="true" class="lucide lucide-folder-open"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"></path></svg></div>
+                  <div class="settings-item-title">מתקינים סקיל מוכן</div>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="chevron-down" aria-hidden="true" class="lucide lucide-chevron-down settings-chevron"><path d="m6 9 6 6 6-6"></path></svg>
+                </button>
+                <div class="settings-item-panel">
+                  <div class="settings-item-panel-inner">
+                    <p class="settings-tab-sub">כשקובץ הסקיל כבר נמצא אצלכם במחשב, בין אם קיבלתם אותו או הורדתם אותו כ-ZIP, מעלים אותו ישירות דרך <span class="ci">Upload a skill</span> (שלב 5 ברצף למעלה). זו גם הזדמנות טובה להציץ בתוכן לפני שמתקינים אותו בפועל.</p>
+                    <p class="settings-tab-sub">אם עוד לא הורדתם שום דבר, התפריט <span class="ci">Browse skills</span> מאפשר להתקין בלחיצה אחת סקילים רשמיים שכבר קיימים בתוך הממשק, בלי לצאת ממנו. זה עובד רק לסקילים שכבר מופיעים שם.</p>
+                    <p class="settings-tab-sub">יש גם אפשרות להביא סקיל מספרייה שאינה חלק מהממשק: כל סקיל כזה מגיע עם שורת פקודה קצרה משלו, שמעתיקים מדף הסקיל המקורי ומריצים אצלכם. בדרך כלל היא נראית בערך כך:</p>
+                    <div class="prompt-block">
+                      <button class="prompt-copy-btn" onclick="copyPrompt(this)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="copy" aria-hidden="true" class="lucide lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg><span>העתק</span></button>
+                      <span class="prompt-text">npx skills add owner/repo</span>
+                    </div>
+                    <div class="callout warning">
+                      <img class="callout-icon-img" src="assets/images/Icons  Bell (Notification).svg" alt="שימו לב">
+                      <div class="callout-body">כלל בטיחות חשוב: מתקינים סקילים רק ממקורות שסומכים עליהם. מדובר בקובץ עם הוראות פעולה ממשיות, וקובץ עוין עלול להסתיר בתוכו פקודות מזיקות.</div>
+                    </div>
+                    <div class="callout tip">
+                      <img class="callout-icon-img" src="assets/images/Icons  Bell (Notification).svg" alt="שימו לב">
+                      <div class="callout-body">כדאי להכיר את <strong>skills.sh</strong>, אתר שמרכז מאגר ענק של סקילים לכל מיני סוכני בינה מלאכותית, לא רק קלוד. אפשר למצוא בו סקילים רשמיים של אנתרופיק וחברות כמו Vercel, וגם סקילים שנכתבו על ידי הקהילה בתחומי עיצוב ופיתוח.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="upload" aria-hidden="true" class="lucide lucide-upload icon-sm"><path d="M12 3v12"></path><path d="m17 8-5-5-5 5"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path></svg> שלב חובה, הפעלת הסקיל</div>
+            <div class="callout warning">
+              <img class="callout-icon-img" src="assets/images/Icons  Bell (Notification).svg" alt="שימו לב">
+              <div class="callout-body">לשמור את הקובץ בתיקיית skills זה לא מספיק, צריך גם להפעיל את הסקיל דרך הממשק.</div>
+            </div>
+            <div class="static-checklist">
+              <div class="static-check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleStaticCheck(this)" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleStaticCheck(this);}">
+                <div class="check-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                <div class="check-content">נכנסים לתפריט <span class="ci">Customize → Skills → +</span></div>
+              </div>
+              <div class="static-check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleStaticCheck(this)" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleStaticCheck(this);}">
+                <div class="check-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                <div class="check-content">מעלים את קובץ ה-<span class="ci">.md</span> של הסקיל מתיקיית skills</div>
+              </div>
+              <div class="static-check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleStaticCheck(this)" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleStaticCheck(this);}">
+                <div class="check-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                <div class="check-content">חוזרים על זה לכל סקיל, כל קובץ מועלה בנפרד</div>
+              </div>
+            </div>
+            <div class="callout tip">
+              <img class="callout-icon-img" src="assets/images/Icons  Bell (Notification).svg" alt="שימו לב">
+              <div class="callout-body">רק אחרי ההעלאה דרך <span class="ci">Customize → Skills → +</span> הסקיל באמת פעיל וקלוד ישתמש בו.</div>
+            </div>
+
+            <div class="section-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="search" aria-hidden="true" class="lucide lucide-search icon-sm"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg> איך לדעת שזה עבד</div>
+            <div class="steps-list">
+              <div class="step-card claude">
+                <img class="step-type-icon" src="assets/images/קלוד עושה.svg" alt="קלוד עושה">
+                <div class="step-card-body"><div class="step-who">בדיקה</div><p>פותחים שיחה חדשה ב-Claude Code וכותבים את הסימן <span class="ci">/</span>. תיפתח רשימה של כל הסקילים המותקנים אצלכם.</p></div>
+              </div>
+            </div>
+
+            <p class="step-desc" style="margin-top:2rem;">עד כאן ההיכרות הכללית עם סקילים. עכשיו, ליישום הספציפי שלנו: הסקיל שישמור בשבילכם על קבצי היומן מהשלב הקודם.</p>
+
+            <div class="section-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="notebook-pen" aria-hidden="true" class="lucide lucide-notebook-pen icon-sm"><path d="M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4"></path><path d="M2 6h4"></path><path d="M2 10h4"></path><path d="M2 14h4"></path><path d="M2 18h4"></path><path d="M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"></path></svg> הספרן: הסקיל שממלא את קבצי היומן</div>
+            <p class="step-desc">שלושת קבצי היומן (<span class="ci">workwithme.md</span>, <span class="ci">solutions.md</span>, <span class="ci">inspiration.md</span>) וה-<span class="ci">memory-ref.md</span> כבר קיימים אצלכם משלב 4, ריקים, מוכנים אבל לא בשימוש. הסקיל שנבנה כאן לא יוצר אותם מחדש, רק כותב לתוכם. הפרומפט להעתקה:</p>
+            <div class="prompt-block">
+              <button class="prompt-copy-btn" onclick="copyPrompt(this)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="copy" aria-hidden="true" class="lucide lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg><span>העתק</span></button>
+              <span class="prompt-text">אני רוצה שתבנה לי סקיל בשם wrap. תפקידו לרוץ רק כשמפעילים אותו במפורש בסוף שיחה - בקריאה ישירה "/wrap" או במילות טריגר כמו "תארוז לי את השיחה" / "תסכם לי את השיחה" - ולא באופן אוטומטי בשום שלב אחר.
+
+כשמפעילים אותו, הוא צריך:
+1. לקרוא את כל השיחה הנוכחית ולזהות שלושה סוגי תובנות: תובנות אישיות על סגנון העבודה שלי (שייכות ל-workwithme.md), תקלות או בעיות שצצו ואיך נפתרו (שייכות ל-solutions.md), ורעיונות שעלו במהלך השיחה ולא מומשו (שייכים ל-inspiration.md).
+2. להציג לי את כל התובנות שמצא כרשימה ממוספרת לפי שלוש הקטגוריות, בלי לכתוב שום דבר לקבצים עדיין.
+3. לחכות לאישור שלי - אני אבחר אילו תובנות לשמור, ואילו לדלג עליהן.
+4. לכתוב רק את התובנות שאישרתי, כל אחת לקובץ הקיים המתאים לה בתיקיית הזיכרון שלי (workwithme.md / solutions.md / inspiration.md - הקבצים כבר קיימים, אין צורך ליצור אותם מחדש).
+5. לעדכן את memory-ref.md הקיים כך שהתיאור של כל קובץ ישקף את מה שבאמת יש בו עכשיו.
+
+חשוב: הסקיל לא נוגע ב-aboutme.md, ב-brandvoice.md או ב-design-system.md - אלה מתעדכנים רק לפי בקשה נפרדת ומפורשת ממני, לא דרך הסקיל הזה.
+<br></span>
+            </div>
+
+            <div class="callout warning">
+              <img class="callout-icon-img" src="assets/images/Icons  Bell (Notification).svg" alt="שימו לב">
+              <div class="callout-body"><strong>הסתייגות חשובה:</strong> סקילים לא נבנים לבד, המערכת לא מזהה אוטומטית מה ראוי להפוך לסקיל. זו תמיד החלטה שלכם, תלויה בשיקול דעת אנושי ולא בזיהוי אוטומטי.</div>
+            </div>
+
+            <div class="concept-wrap">
+              <div class="concept-card" tabindex="0" role="button" aria-label="הידעת: Opinionated, לחצו לגילוי הפירוש">
+                <div class="concept-card-inner">
+                  <div class="concept-front"><div class="concept-eyebrow">הידעת?</div><div class="concept-term term-marker">Opinionated</div><div class="concept-hint">העבירו את העכבר לגילוי הפירוש ←</div></div>
+                  <div class="concept-back">"דעתנית" - כך מתארים גישה שתלויה בהחלטה אנושית ידנית (מה ראוי להיות סקיל), ולא בזיהוי אוטומטי של המערכת.</div>
+                </div>
+              </div>
+            </div>
+
+            <p class="step-desc" style="margin-top:1rem;">עכשיו יש לכם מערכת שלמה: קובץ קבוע, קטלוג, מדפי זהות, ומדפי יומן שמתמלאים כשאתם מבקשים זאת ובשליטתכם המלאה.</p>
+          </div>
+        </div>
+
+        <!-- ===== STEP 6 ===== -->
+        <div class="step" id="step6">
+          <div class="step-header">
+            <span class="step-number">שלב 6</span>
+            <h2 class="step-title">מתי בעצם מפעילים את <span class="hl-underline">wrap</span></h2>
+            <p class="step-desc">התשובה קשורה למשהו שכדאי להכיר על איך שיחה עם קלוד עובדת מבפנים</p>
+          </div>
+
+          <div class="reveal visible">
+            <div class="steps-list">
+              <div class="step-card info">
+                <img class="step-type-icon" src="assets/images/מוח ונורה איקון.svg" alt="קלוד מסביר">
+                <div class="step-card-body">
+                  <p>לכל שיחה יש <strong>חלון הקשר (context window)</strong>, נפח המידע שקלוד "מחזיק בראש" באותו רגע. בכל הודעה שאתם שולחים, קלוד לא נזכר במה שהיה קודם, הוא קורא מחדש את כל השיחה מההתחלה.</p>
+                  <p>ככל שהשיחה מתארכת, שני דברים קורים במקביל: כל הודעה עולה יותר, וברגע מסוים קלוד מתחיל לאבד חדות לגבי מה שנאמר בתחילת השיחה, פשוט כי יש יותר מדי לקרוא.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="callout tip">
+              <img class="callout-icon-img" src="assets/images/Icons  Bell (Notification).svg" alt="שימו לב">
+              <div class="callout-body"><strong>המסקנה המעשית:</strong> לא מחכים שהשיחה "תיתקע" או שקלוד יתחיל לטעות בפרטים ישנים. אורזים מוקדם, בערך כשחלון ההקשר מגיע לאמצע. כדי לדעת איפה אתם עומדים, יש חיווי שמראה כמה מהחלון כבר תפוס, ואפשר לבדוק גם ישירות עם הפקודה <span class="ci">/context</span>.</div>
+            </div>
+
+            <div class="section-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="split" aria-hidden="true" class="lucide lucide-split icon-sm"><path d="M16 3h5v5"></path><path d="M8 3H3v5"></path><path d="M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3"></path><path d="m15 9 6-6"></path></svg> שתי דרכים לפנות מקום</div>
+            <div class="settings-accordion">
+              <div class="settings-item">
+                <button class="settings-item-head" onclick="toggleSettingsItem(this)" aria-expanded="false">
+                  <div class="settings-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="minimize-2" aria-hidden="true" class="lucide lucide-minimize-2"><path d="m14 10 7-7"></path><path d="M20 10h-6V4"></path><path d="m3 21 7-7"></path><path d="M4 14h6v6"></path></svg></div>
+                  <div class="settings-item-title"><bdi dir="ltr">/compact</bdi></div>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="chevron-down" aria-hidden="true" class="lucide lucide-chevron-down settings-chevron"><path d="m6 9 6 6 6-6"></path></svg>
+                </button>
+                <div class="settings-item-panel">
+                  <div class="settings-item-panel-inner">
+                    <p class="settings-tab-sub">מכווץ את היסטוריית השיחה לתקציר ומפנה מקום מיידית, בלי לפתוח שיחה חדשה.</p>
+                    <div class="settings-row">
+                      <div class="settings-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                      <div class="settings-row-body">
+                        <div class="settings-row-title">קלוד בוחר מה לשמר</div>
+                        <div class="settings-row-desc">לא אתם, והתקציר נעלם יחד עם השיחה. מתאים לרגע שרק צריך אוויר באמצע משימה.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="settings-item">
+                <button class="settings-item-head" onclick="toggleSettingsItem(this)" aria-expanded="false">
+                  <div class="settings-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="book-open-check" aria-hidden="true" class="lucide lucide-book-open-check"><path d="M12 5v16"></path><path d="m16 12 2 2 4-4"></path><path d="M22 6V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2h4.001A2 2 0 0022 17v-1.344"></path></svg></div>
+                  <div class="settings-item-title"><bdi dir="ltr">/wrap</bdi></div>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="chevron-down" aria-hidden="true" class="lucide lucide-chevron-down settings-chevron"><path d="m6 9 6 6 6-6"></path></svg>
+                </button>
+                <div class="settings-item-panel">
+                  <div class="settings-item-panel-inner">
+                    <p class="settings-tab-sub">עובד הפוך: אתם רואים בדיוק מה מוצע לשמור, ומאשרים פריט-פריט.</p>
+                    <div class="settings-row">
+                      <div class="settings-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                      <div class="settings-row-body">
+                        <div class="settings-row-title">ההחלטות שלכם נשארות לצמיתות</div>
+                        <div class="settings-row-desc">בקבצי הזיכרון. מתאים לרגע שסוגרים נושא ורוצים שהתובנות יישארו.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-left-right" aria-hidden="true" class="lucide lucide-arrow-left-right icon-sm"><path d="M8 3 4 7l4 4"></path><path d="M4 7h16"></path><path d="m16 21 4-4-4-4"></path><path d="M20 17H4"></path></svg> עוברים לשיחה הבאה בלי לאבד חוט</div>
+            <p class="step-desc">אחרי שמפעילים wrap ומאשרים מה נכנס לזיכרון, נשאר עוד צעד קטן: מבקשים מקלוד לנסח <strong>פרומפט המשך</strong>, סיכום קצר של איפה בדיוק המשימה עומדת ומה נשאר לעשות. מעתיקים אותו, פותחים שיחה חדשה, ומדביקים אותו כהודעה הראשונה. כך השיחה החדשה ממשיכה בדיוק מהנקודה שבה עצרתם, עם חלון הקשר פנוי לגמרי.</p>
+
+            <div class="section-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="shield-check" aria-hidden="true" class="lucide lucide-shield-check icon-sm"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="m9 12 2 2 4-4"></path></svg> שלושה הרגלים ששומרים על החלון נקי מלכתחילה</div>
+            <div class="flip-grid">
+              <div class="flip-card" tabindex="0">
+                <div class="flip-card-inner">
+                  <div class="flip-front"><div class="flip-icon"></div><h4>תכנון מחוץ ל-Claude Code</h4><span class="flip-hint">העבירו את העכבר ←</span></div>
+                  <div class="flip-back">פרויקט חדש מגבשים קודם בשיחת צ'אט רגילה, ומביאים ל-Claude Code רק את הפרומפט הסופי. גם התלבטויות באמצע עבודה כדאי "לפתור" בשיחה נפרדת ולחזור עם החלטה.</div>
+                </div>
+              </div>
+              <div class="flip-card" tabindex="0">
+                <div class="flip-card-inner">
+                  <div class="flip-front"><div class="flip-icon"></div><h4>שאלות צד עם /btw</h4><span class="flip-hint">העבירו את העכבר ←</span></div>
+                  <div class="flip-back">לשאלה לא קשורה, מקלידים /btw ואחריה השאלה. התשובה מופיעה בחלונית נפרדת ולא נכנסת להיסטוריה. אין לה גישה לכלים, טובה לשאלת זיכרון, לא לחיפוש בקוד או הרצת פקודות.</div>
+                </div>
+              </div>
+              <div class="flip-card" tabindex="0">
+                <div class="flip-card-inner">
+                  <div class="flip-front"><div class="flip-icon"></div><h4>סוכנים למשימות כבדות</h4><span class="flip-hint">העבירו את העכבר ←</span></div>
+                  <div class="flip-back">מחקר ארוך או בדיקה שצורכת קונטקסט נשלחים לסוכן נפרד, שפועל בחלון משלו ומחזיר רק את התוצאה הסופית.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== STEP 7 ===== -->
+        <div class="step" id="step7">
+          <div class="step-header">
+            <span class="step-number">שלב 7</span>
+            <h2 class="step-title">וכשזה <span class="hl-underline">גדל</span> לארגון שלם</h2>
+            <p class="step-desc">כל מה שבנינו עד כה הוא בקנה מידה אישי, מה קורה כשזה עובר לאלפי עובדים?</p>
+          </div>
+
+          <div class="reveal">
+            <p class="step-desc">כל מה שבנינו עד כה הוא בקנה מידה אישי - אדם אחד, קבצים משלו, ואישור שלו לפני כל שינוי. כשאותו רעיון עובר לארגון עם עשרות או מאות עובדים שמריצים אלפי שיחות עם קלוד במקביל, בונים תשתית שלמה: מאגר זיכרון פיזי משותף, צי סוכנים בשלושה תפקידים, ותהליך "חלימה" אסינכרוני שרץ ברקע ומשפר את הזיכרון בעצמו, בלי להאט את קצב העבודה במהלך היום.</p>
+
+            <div class="concept-wrap">
+              <div class="concept-card" tabindex="0" role="button" aria-label="הידעת: Nightly Dreaming Routine, לחצו לגילוי הפירוש">
+                <div class="concept-card-inner">
+                  <div class="concept-front"><div class="concept-eyebrow">הידעת?</div><div class="concept-term term-marker">Nightly Dreaming Routine</div><div class="concept-hint">העבירו את העכבר לגילוי הפירוש ←</div></div>
+                  <div class="concept-back"><strong>מחזור החלימה הלילי</strong> - השם הרשמי לכל התהליך שמתואר בקטגוריה הזו: הפעלה אוטומטית וקבועה, כל לילה מחוץ לשעות העבודה, שסורקת את פעילות היום ומציעה עדכוני זיכרון לאישור מנהל.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="folder-open" aria-hidden="true" class="lucide lucide-folder-open icon-sm"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"></path></svg> מאגר הזיכרון הפיזי המשותף</div>
+            <div class="screenshot-frame"><img src="assets/images/files.png" alt="מבנה תיקיות וקבצים של מאגר הזיכרון הארגוני המשותף"></div>
+            <p class="step-desc">זה מבנה התיקיות והקבצים שיש לפתוח במחשב, ה"מוח" המשותף שכל הסוכנים בארגון קוראים וכותבים אליו. בתמונה מופיעות גם דוגמאות לקבצים שנשארים ריקים בהתחלה, ויתמלאו בהמשך על ידי הסוכנים עצמם תוך כדי עבודה ובתהליך החלימה.</p>
+
+            <div class="section-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="lightbulb" aria-hidden="true" class="lucide lucide-lightbulb icon-sm"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg> צי הסוכנים הארגוני</div>
+            <p class="step-desc">כדי לבנות מערכת כזו, לא מסתפקים בסוכן בודד. מקימים "צי סוכנים" המורכב משלושה תפקידים עיקריים שפועלים בתיאום מושלם, וכל אחד מהם מקבל פרומפט מערכת קבוע משלו:</p>
+
+            <div class="settings-accordion">
+              <div class="settings-item">
+                <button class="settings-item-head" onclick="toggleSettingsItem(this)" aria-expanded="false">
+                  <div class="settings-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="sparkles" aria-hidden="true" class="lucide lucide-sparkles"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg></div>
+                  <div class="settings-item-title">הסוכנים האופרטיביים</div>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="chevron-down" aria-hidden="true" class="lucide lucide-chevron-down settings-chevron"><path d="m6 9 6 6 6-6"></path></svg>
+                </button>
+                <div class="settings-item-panel">
+                  <div class="settings-item-panel-inner">
+                    <p class="settings-tab-sub">אלו הסוכנים שנותנים שירות לעובדי הארגון או ללקוחות הקצה - למשל סוכן כתיבת תוכן, סוכן תמיכה טכנית, סוכן ניתוח נתונים. עשרות או מאות סוכנים רצים במקביל, בהתאם לצורכי הארגון. הם מבצעים את עבודתם השוטפת, קוראים הנחיות ממאגר הזיכרון הכללי, וכותבים זיכרונות זמניים ונקודתיים לטיוטות האישיות שלהם.</p>
+                    <div class="prompt-block">
+                      <button class="prompt-copy-btn" onclick="copyPrompt(this)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="copy" aria-hidden="true" class="lucide lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg><span>העתק</span></button>
+                      <span class="prompt-text">תפקיד: אתה סוכן בינה מלאכותית ארגוני המיועד לביצוע משימות שוטפות.
+
+הנחיות עבודה עם זיכרון וקונטקסט:
+1. לפני שאתה עונה למשתמש או מבצע משימה, עליך לחפש בתיקיית הזיכרון הארגונית (/memory_store/) קבצים הרלוונטיים לנושא המשימה (למשל: העדפות סגנון, כללי עבודה, ידע על מוצרים) כדי לפעול בהתאם להנחיות המעודכנות ביותר.
+2. במהלך עבודתך, יש לך גישה חופשית לקרוא ולכתוב לטיוטה האישית שלך (Scratchpad) הממוקמת בנתיב: /memory_store/scratchpads/{session_id}.md. השתמש בה כדי לשמור תובנות, העדפות משתמש ספציפיות שעלו בשיחה, או שגיאות שנתקלת בהן.
+3. חסום לחלוטין: אין לך הרשאה לערוך או לשנות קבצים בתיקיית הזיכרון הגלובלית (/memory_store/global_preferences.md). קבצים אלו הם לקריאה בלבד עבורך.</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="settings-item">
+                <button class="settings-item-head" onclick="toggleSettingsItem(this)" aria-expanded="false">
+                  <div class="settings-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="cpu" aria-hidden="true" class="lucide lucide-cpu"><path d="M12 20v2"></path><path d="M12 2v2"></path><path d="M17 20v2"></path><path d="M17 2v2"></path><path d="M2 12h2"></path><path d="M2 17h2"></path><path d="M2 7h2"></path><path d="M20 12h2"></path><path d="M20 17h2"></path><path d="M20 7h2"></path><path d="M7 20v2"></path><path d="M7 2v2"></path><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="8" y="8" width="8" height="8" rx="1"></rect></svg></div>
+                  <div class="settings-item-title">סוכני הניתוח, "סוכני החלום"</div>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="chevron-down" aria-hidden="true" class="lucide lucide-chevron-down settings-chevron"><path d="m6 9 6 6 6-6"></path></svg>
+                </button>
+                <div class="settings-item-panel">
+                  <div class="settings-item-panel-inner">
+                    <p class="settings-tab-sub">סוכנים ייעודיים שאינם באים במגע עם המשתמשים, ומופעלים אסינכרונית מחוץ לשעות הפעילות. מערכת הניהול מפעילה "צי" של כמה סוכנים כאלה במקביל, כדי לחלק את עומס הניתוח של שיחות היום החולף. כל סוכן מקבל קבוצת תמלילי שיחות ומטא-דאטה של ביצועי כלים מהיממה האחרונה, משווה אותם לזיכרון הקיים, ומחלץ דפוסי כשלים, טעויות חוזרות או פערי ידע.</p>
+                    <div class="prompt-block">
+                      <button class="prompt-copy-btn" onclick="copyPrompt(this)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="copy" aria-hidden="true" class="lucide lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg><span>העתק</span></button>
+                      <span class="prompt-text">תפקיד: אתה סוכן ניתוח אסינכרוני (Dreaming Sub-Agent) שתפקידו לנתח אינטראקציות של סוכנים אופרטיביים ולשפר את הזיכרון הארגוני.
+
+קלטים שתקבל:
+1. תמלילי שיחות מלאים מהיממה האחרונה, הכוללים הודעות משתמש, תגובות סוכן, קריאות לכלים (Tool Calls), תשובות הכלים ושגיאות מערכת.
+2. קובצי הזיכרון הארגוני הקיים (קובצי Markdown בתיקיית /memory_store/).
+
+משימת הניתוח שלך:
+סרוק בעיון את המידע וזהה דפוסים חוזרים של כשלים או חוסר יעילות ברמת הצי. חפש במיוחד:
+א. פערי ידע (Missing Curriculum): נושאים שמשתמשים שאלו עליהם והסוכנים לא ידעו לענות כי המידע לא קיים בזיכרון הארגוני.
+ב. שגיאות בהגדרת כלים (Tool Configuration): מקרים שבהם סוכנים קראו לכלים בצורה שגויה (למשל, הזנת ערכים בפורמט שגוי, שגיאות API חוזרות).
+ג. חוסר עקביות סגנונית או ארגונית: דפוסי כתיבה או התנהגות שאינם תואמים את ערכי המותג (למשל, שימוש מוגזם בסימני פיסוק מסוימים, טון לא מתאים).
+
+פלט נדרש:
+הפק דוח מפורט הכולל:
+1. הגדרת הבעיה שזיהית.
+2. נתון סטטיסטי ראשוני (באילו שיחות וכמה פעמים היא חזרה על עצמה).
+3. ציטוטים או דוגמאות מתוך תמלילי הכלים/השיחות המדגימים את הבעיה.
+4. הצעה מנומקת לשינוי, הוספה או מחיקה של תוכן בקובצי הזיכרון הארגוניים.</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="settings-item">
+                <button class="settings-item-head" onclick="toggleSettingsItem(this)" aria-expanded="false">
+                  <div class="settings-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="clipboard-list" aria-hidden="true" class="lucide lucide-clipboard-list"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="M12 11h4"></path><path d="M12 16h4"></path><path d="M8 11h.01"></path><path d="M8 16h.01"></path></svg></div>
+                  <div class="settings-item-title">הסוכן המנהל, "האורקסטרטור"</div>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="chevron-down" aria-hidden="true" class="lucide lucide-chevron-down settings-chevron"><path d="m6 9 6 6 6-6"></path></svg>
+                </button>
+                <div class="settings-item-panel">
+                  <div class="settings-item-panel-inner">
+                    <p class="settings-tab-sub">סוכן מנהל יחיד, שמרכז את הדוחות מכל "סוכני החלום", מזהה אילו דפוסים הם רוחביים ומובהקים מספיק כדי להצדיק שינוי אמיתי בזיכרון הארגוני, ומגבש הצעת עדכון סופית ומסודרת המוגשת לאישור של מנהל אנושי.</p>
+                    <div class="prompt-block">
+                      <button class="prompt-copy-btn" onclick="copyPrompt(this)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="copy" aria-hidden="true" class="lucide lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg><span>העתק</span></button>
+                      <span class="prompt-text">תפקיד: אתה סוכן הניהול המרכזי של תהליך החלימה (Dreaming Orchestrator).
+
+המשימה שלך:
+עליך לעבור על דוחות הניתוח שהתקבלו מצי "סוכני החלום" (Sub-Agents) ולייצר הצעת עדכון מאוחדת, איכותית ובטוחה למאגר הזיכרון הארגוני.
+
+שלבי העבודה שלך:
+1. סינון רעשים: התעלם מבעיות חד-פעמיות או מקריות שקרו בסשן בודד. התמקד אך ורק בדפוסים מובהקים ושיטתיים המשפיעים על ביצועי הצי כולו.
+2. גיבוש הצעות לשינוי הזיכרון: עבור כל דפוס מהותי שזיהית, נסח שינוי ספציפי (בפורמט Markdown ברור) לקובץ הזיכרון המתאים.
+3. ביסוס ראיות (Evidence-Based): לצד כל שינוי מוצע, חובה להציג למנהל האנושי:
+   - מהו קובץ היעד לשינוי.
+   - השפעה סטטיסטית (למשל: "השגיאה הופיעה ב-15 מתוך 40 שיחות שנותחו הלילה").
+   - דוגמה או שתיים מתוך תמלילי שיחות אמיתיים המחישים את הבעיה.
+   - הסבר קצר מדוע העדכון המוצע יפתור את הבעיה בטווח הארוך.
+
+פלט נדרש:
+מסמך הצעות מובנה המיועד לאישור אנושי (Human-in-the-loop). אל תבצע שינויים ישירים בקבצים לפני אישור זה!</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="cpu" aria-hidden="true" class="lucide lucide-cpu icon-sm"><path d="M12 20v2"></path><path d="M12 2v2"></path><path d="M17 20v2"></path><path d="M17 2v2"></path><path d="M2 12h2"></path><path d="M2 17h2"></path><path d="M2 7h2"></path><path d="M20 12h2"></path><path d="M20 17h2"></path><path d="M20 7h2"></path><path d="M7 20v2"></path><path d="M7 2v2"></path><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="8" y="8" width="8" height="8" rx="1"></rect></svg> "חלימה" בפועל, צעד אחר צעד</div>
+            <p class="step-desc">מערכת החלימה פועלת כגלגל שיניים אסינכרוני שרץ ברקע (למשל, בכל לילה ב-02:00) מחוץ לשעות העבודה הפעילות, ובמשאבי מחשוב וטוקנים נפרדים, כדי לא להפריע למהירות העבודה של הסוכנים במהלך היום.</p>
+
+            <div class="dream-timeline">
+              <div class="dream-step">
+                <div class="dream-node-col">
+                  <div class="dream-node claude" tabindex="0">1</div>
+                  <div class="dream-connector"></div>
+                </div>
+                <div class="dream-step-body">
+                  <div class="step-who">איסוף חומרי הגלם</div>
+                  <p>בכל לילה המערכת אוספת את כל תמלילי השיחות של הסוכנים מאותו יום, כולל המטא-דאטה של קריאות הכלים: אילו כלים הופעלו, אילו פרמטרים נשלחו, ומה היו שגיאות המערכת.</p>
+                </div>
+              </div>
+              <div class="dream-step">
+                <div class="dream-node-col">
+                  <div class="dream-node claude" tabindex="0">2</div>
+                  <div class="dream-connector"></div>
+                </div>
+                <div class="dream-step-body">
+                  <div class="step-who">חלוקה לסוכני החלום</div>
+                  <p>מנוע הניהול (האורקסטרטור) מחלק את התמלילים בין סוכני הניתוח האסינכרוניים ומפעיל אותם במקביל.</p>
+                </div>
+              </div>
+              <div class="dream-step">
+                <div class="dream-node-col">
+                  <div class="dream-node claude" tabindex="0">3</div>
+                  <div class="dream-connector"></div>
+                </div>
+                <div class="dream-step-body">
+                  <div class="step-who">גיבוש המלצות רוחביות</div>
+                  <p>סוכני הניתוח מדווחים למנוע הניהול על כשלים. הוא בודק אם הבעיה שיטתית (למשל: "הרבה סוכנים השתמשו ברדיאנים במקום במעלות") ומכין הצעת עדכון לקובץ הזיכרון המתאים.</p>
+                </div>
+              </div>
+              <div class="dream-step">
+                <div class="dream-node-col">
+                  <div class="dream-tag">Human in the loop</div>
+                  <div class="dream-node user" tabindex="0">4</div>
+                  <div class="dream-connector"></div>
+                </div>
+                <div class="dream-step-body">
+                  <div class="step-who">אישור אנושי</div>
+                  <p>בבוקר, מנהל המערכת נכנס למסך בקרה פשוט המציג את ההמלצות, ולוחץ על כפתור "אשר" (Accept) או "דחה" (Reject).</p>
+                </div>
+              </div>
+              <div class="dream-step">
+                <div class="dream-node-col">
+                  <div class="dream-node claude" tabindex="0">5</div>
+                  <div class="dream-connector"></div>
+                </div>
+                <div class="dream-step-body">
+                  <div class="step-who">עדכון הזיכרון</div>
+                  <p>הצעות שאושרו נכתבות ישירות לתוך קובצי ה-Markdown הרלוונטיים. בשיחה הבאה שלהם, הסוכנים האופרטיביים כבר קוראים את הזיכרון המעודכן ועובדים בצורה נכונה ומדויקת.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="quote-block">לדוגמה, המערכת מציגה למנהל: "מומלץ להוסיף לקובץ tool_configurations.md את השורה: בעת שימוש בכלי חישוב הנדסי, המר תמיד את הערכים ממעלות לרדיאנים. (השפעה: מונע שגיאה שקרתה ב-18 שיחות שונות אתמול)."</div>
+
+            <div class="concept-wrap">
+              <div class="concept-card" tabindex="0" role="button" aria-label="הידעת: Out-of-band, לחצו לגילוי הפירוש">
+                <div class="concept-card-inner">
+                  <div class="concept-front"><div class="concept-eyebrow">הידעת?</div><div class="concept-term term-marker">Out-of-band</div><div class="concept-hint">העבירו את העכבר לגילוי הפירוש ←</div></div>
+                  <div class="concept-back">סקירה שרצה מחוץ לשיחה עצמה, ברקע, על תמלילים שכבר הסתיימו, בניגוד לעדכון In-band שקורה בזמן אמת בתוך שיחה חיה.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="clipboard-list" aria-hidden="true" class="lucide lucide-clipboard-list icon-sm"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="M12 11h4"></path><path d="M12 16h4"></path><path d="M8 11h.01"></path><path d="M8 16h.01"></path></svg> מנגנוני הגנה בייצור</div>
+            <p class="step-desc">כדי שהתשתית לא תקרוס וכדי למנוע מהסוכנים לשבש זה את עבודתו של זה, המעטפת הטכנולוגית שמריצה אותם חייבת ליישם שלושה כללים דטרמיניסטיים קבועים:</p>
+
+            <div class="shield-stack">
+              <div class="shield-layer l1" tabindex="0" role="button" aria-label="מניעת התנגשויות בעבודה מקבילית, לחצו לפרטים" onclick="this.classList.toggle('open')" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();this.classList.toggle('open');}">
+                <div class="shield-layer-title">מניעת התנגשויות בעבודה מקבילית<svg class="shield-layer-chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></div>
+                <div class="shield-layer-desc">כשעשרות סוכנים מנסים לעדכן את אותם קובצי זיכרון במקביל, עלול להיווצר קונפליקט. לפני שסוכן מתחיל לנסח עדכון, המערכת מייצרת קוד זיהוי (Hash) המבוסס על מצב הקובץ הנוכחי. רגע לפני השמירה היא בודקת שוב: אם הקוד זהה, השינוי נשמר. אם השתנה, השמירה נחסמת, הסוכן מקבל את הגרסה העדכנית ומתבקש למזג את השינויים ולנסות שוב.</div>
+              </div>
+              <div class="shield-layer l2" tabindex="0" role="button" aria-label="מערכת הרשאות מדורגת, לחצו לפרטים" onclick="this.classList.toggle('open')" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();this.classList.toggle('open');}">
+                <div class="shield-layer-title">מערכת הרשאות מדורגת<svg class="shield-layer-chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></div>
+                <div class="shield-layer-desc">לא כל סוכן יכול לכתוב לכל מקום. זיכרון גלובלי מוגדר כקריאה בלבד לסוכנים האופרטיביים, ומתעדכן רק דרך תהליך החלימה הלילי ובאישור מנהל אנושי. טיוטות עבודה (Scratchpads) מוגדרות כקריאה וכתיבה חופשית, לגמישות מלאה בתוך השיחה האישית של כל סוכן.</div>
+              </div>
+              <div class="shield-layer l3" tabindex="0" role="button" aria-label="ניהול גרסאות ומעקב, לחצו לפרטים" onclick="this.classList.toggle('open')" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();this.classList.toggle('open');}">
+                <div class="shield-layer-title">ניהול גרסאות ומעקב<svg class="shield-layer-chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></div>
+                <div class="shield-layer-desc">כל שינוי בקובץ זיכרון מתועד: מי ביצע אותו (איזה סוכן או משתמש), מתי, ועל בסיס איזה תמליל שיחה הוחלט. אם מתגלה שעדכון מסוים פגע בביצועים, אפשר לבצע שחזור לאחור בלחיצת כפתור אחת לגרסה היציבה הקודמת.</div>
+              </div>
+            </div>
+
+            <div class="concept-row">
+              <div class="concept-card" tabindex="0" role="button" aria-label="הידעת: Deterministic Optimistic Locking, לחצו לגילוי הפירוש">
+                <div class="concept-card-inner">
+                  <div class="concept-front"><div class="concept-eyebrow">הידעת?</div><div class="concept-term term-marker">Optimistic Locking</div><div class="concept-hint">העבירו את העכבר ←</div></div>
+                  <div class="concept-back"><strong>נעילה אופטימית דטרמיניסטית</strong> - בודקים אם הקובץ השתנה רק רגע לפני השמירה, ולא נועלים אותו מראש. אם השתנה, מושכים את הגרסה החדשה ומנסים שוב.</div>
+                </div>
+              </div>
+              <div class="concept-card" tabindex="0" role="button" aria-label="הידעת: Hashing, לחצו לגילוי הפירוש">
+                <div class="concept-card-inner">
+                  <div class="concept-front"><div class="concept-eyebrow">הידעת?</div><div class="concept-term term-marker">Hashing</div><div class="concept-hint">העבירו את העכבר ←</div></div>
+                  <div class="concept-back"><strong>החתמה בקוד זיהוי</strong> - כל קובץ מקבל קוד קצר שמייצג את תוכנו. אם התוכן משתנה, הקוד משתנה, וזו הדרך לזהות התנגשות עדכונים.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="star" aria-hidden="true" class="lucide lucide-star icon-sm"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg> הערך העסקי למנהל</div>
+            <div class="receipt-row">
+              <div class="receipt-card" tabindex="0" role="button" aria-label="עלייה בדיוק, לחצו לפרטים" onclick="this.classList.toggle('open')" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();this.classList.toggle('open');}">
+                <div class="receipt-eyebrow">-- 01 --</div>
+                <div class="receipt-stamp-zone"><div class="receipt-stamp"><span style="font-size:1.35rem;line-height:1;">✓</span><span>מאושר</span></div></div>
+                <div class="receipt-title">עלייה בדיוק</div>
+                <div class="receipt-desc">הסוכנים משתפרים מריצה לריצה, לומדים מטעויות העבר ואינם חוזרים עליהן.</div>
+              </div>
+              <div class="receipt-card" tabindex="0" role="button" aria-label="חיסכון בעלויות וטוקנים, לחצו לפרטים" onclick="this.classList.toggle('open')" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();this.classList.toggle('open');}">
+                <div class="receipt-eyebrow">-- 02 --</div>
+                <div class="receipt-stamp-zone"><div class="receipt-stamp"><span style="font-size:1.35rem;line-height:1;">✓</span><span>מאושר</span></div></div>
+                <div class="receipt-title">חיסכון בעלויות וטוקנים</div>
+                <div class="receipt-desc">בזכות זיכרון מדויק ורלוונטי, הסוכנים פותרים משימות בניסיון ראשון (One-shot) במקום ללכת לאיבוד, מה שמקצר את זמן העבודה וחוסך כסף רב על טוקנים.</div>
+              </div>
+              <div class="receipt-card" tabindex="0" role="button" aria-label="למידה מתמדת ואוטונומית, לחצו לפרטים" onclick="this.classList.toggle('open')" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();this.classList.toggle('open');}">
+                <div class="receipt-eyebrow">-- 03 --</div>
+                <div class="receipt-stamp-zone"><div class="receipt-stamp"><span style="font-size:1.35rem;line-height:1;">✓</span><span>מאושר</span></div></div>
+                <div class="receipt-title">למידה מתמדת ואוטונומית</div>
+                <div class="receipt-desc">הסוכנים מבצעים שיפור עצמי מתמיד ברקע, מה שמשחרר את מפתחי הארגון לעסוק בליבת הפעילות ובפיתוח מוצרים חדשים.</div>
+              </div>
+            </div>
+
+            <p class="step-desc" style="margin-top:1rem;">המערכת שבניתם בלומדה הזו היא בדיוק אותם עקרונות, מותאמים לגודל הנכון: קובץ קבוע, קטלוג, מדפים ממוינים, וספרן שפועל רק כשקוראים לו ובאישורכם. הפלייבוק הארגוני הזה, עם צי הסוכנים, מאגר הזיכרון והחלימה, הוא הצעד הבא כשתרצו להרחיב את זה לצוות שלם.</p>
+          </div>
+        </div>
+
+        <!-- ===== STEP 8, CHECKLIST ===== -->
+        <div class="step" id="step8">
+          <div class="step-header">
+            <span class="step-number">סיכום</span>
+            <h2 class="step-title">צ'קליסט <span class="hl-underline">סיכום</span> הלומדה</h2>
+            <p class="step-desc">סמנו כל פריט כשהוא ברור לכם, וודאו שהמוח החכם באמת מוכן</p>
+          </div>
+          <div class="reveal">
+            <div class="checklist-progress" id="checklistProgress">0 / 8 הושלמו</div>
+            <div class="checklist" id="checklistEl">
+    <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleCheck(this);}">
+      <div class="check-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+      <div class="check-content">אתם יודעים מה ההבדל בין CLAUDE.md (אתם כותבים) לבין auto memory (קלוד כותב לעצמו)</div>
+    </div>
+  
+    <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleCheck(this);}">
+      <div class="check-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+      <div class="check-content">בניתם, או יודעים לבנות, קובץ CLAUDE.md גלובלי משלכם בנתיב <bdi dir="ltr">~/.claude/CLAUDE.md</bdi></div>
+    </div>
+  
+    <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleCheck(this);}">
+      <div class="check-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+      <div class="check-content">יש לכם קטלוג memory-ref.md שמפנה למדפי הזהות (aboutme / brandvoice / design-system) ולמדפי היומן</div>
+    </div>
+  
+    <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleCheck(this);}">
+      <div class="check-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+      <div class="check-content">אתם מבינים למה מדפי הזהות מתעדכנים רק לפי בקשה מפורשת, ומדפי היומן דרך הסקיל</div>
+    </div>
+  
+    <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleCheck(this);}">
+      <div class="check-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+      <div class="check-content">בניתם, או יודעים לבנות, את הסקיל wrap שממלא את קבצי היומן באישורכם</div>
+    </div>
+  
+    <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleCheck(this);}">
+      <div class="check-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+      <div class="check-content">אתם יודעים מתי להשתמש ב-/compact (פינוי מהיר) ומתי ב-wrap (שימור לצמיתות)</div>
+    </div>
+  
+    <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleCheck(this);}">
+      <div class="check-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+      <div class="check-content">אתם בודקים את מד ההקשר עם /context, ולא מחכים שהשיחה "תיתקע"</div>
+    </div>
+  
+    <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleCheck(this);}">
+      <div class="check-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+      <div class="check-content">אתם מכירים את שלושת ההרגלים לשמירה על חלון נקי: תכנון בחוץ, /btw, וסוכנים למשימות כבדות</div>
+    </div>
+  </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ===== BOTTOM NAV ===== -->
+<nav class="bottom-nav visible" id="bottomNav" aria-label="ניווט בין שלבים">
+  <button class="nav-btn" id="prevBtn" onclick="prevStep()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" aria-hidden="true" class="lucide lucide-arrow-right"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg> הקודם</button>
+  <button class="nav-btn primary" id="nextBtn" onclick="nextStep()">הבא <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-left" aria-hidden="true" class="lucide lucide-arrow-left icon-sm"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg></button>
+</nav>
+
+<!-- ===== COMPLETION ===== -->
+<section class="completion" id="completion">
+  <div class="logo-bar" style="position:fixed;top:0;left:0;right:0;z-index:500;">
+    <img class="logo-bar-center" src="assets/images/LogoBanner.svg" alt="איריס פלד">
+  </div>
+  <video class="completion-video" muted="" playsinline="" preload="auto" aria-hidden="true">
+    <source src="assets/videos/finalvideo.mp4" type="video/mp4">
+  </video>
+  <img class="completion-mascot left" src="assets/images/Claudecode.png" alt="">
+  <img class="completion-mascot right" src="assets/images/Claudecode.png" alt="">
+  <div class="completion-content">
+    <div class="completion-actions">
+      <button class="completion-btn secondary" onclick="restartTutorial()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="rotate-ccw" aria-hidden="true" class="lucide lucide-rotate-ccw"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg> חזרה להתחלה</button>
+    </div>
+    <p class="completion-goodluck"><span class="wave-letter">ב</span><span class="wave-letter">ה</span><span class="wave-letter">צ</span><span class="wave-letter">ל</span><span class="wave-letter">ח</span><span class="wave-letter">ה</span><span class="wave-letter">!</span></p>
+  </div>
+</section>
+
+<script>
+let currentStep = 1;
+const totalSteps = 8;
+
+const CHECKLIST = [
+  'אתם יודעים מה ההבדל בין CLAUDE.md (אתם כותבים) לבין auto memory (קלוד כותב לעצמו)',
+  'בניתם, או יודעים לבנות, קובץ CLAUDE.md גלובלי משלכם בנתיב <bdi dir="ltr">~/.claude/CLAUDE.md</bdi>',
+  'יש לכם קטלוג memory-ref.md שמפנה למדפי הזהות (aboutme / brandvoice / design-system) ולמדפי היומן',
+  'אתם מבינים למה מדפי הזהות מתעדכנים רק לפי בקשה מפורשת, ומדפי היומן דרך הסקיל',
+  'בניתם, או יודעים לבנות, את הסקיל wrap שממלא את קבצי היומן באישורכם',
+  'אתם יודעים מתי להשתמש ב-/compact (פינוי מהיר) ומתי ב-wrap (שימור לצמיתות)',
+  'אתם בודקים את מד ההקשר עם /context, ולא מחכים שהשיחה "תיתקע"',
+  'אתם מכירים את שלושת ההרגלים לשמירה על חלון נקי: תכנון בחוץ, /btw, וסוכנים למשימות כבדות'
+];
+
+window.addEventListener('load', () => {
+  document.querySelector('.hero').classList.add('animate');
+  setTimeout(() => {
+    const c = document.querySelector('.hero-content');
+    const h = document.querySelector('.hero').offsetHeight;
+    c.style.top = (h - c.offsetHeight - window.innerHeight * 0.03) + 'px';
+  }, 2000);
+  buildChecklist();
+  animateEyebrows();
+  lucide.createIcons();
+});
+
+function animateEyebrows() {
+  document.querySelectorAll('.concept-eyebrow').forEach(el => {
+    const text = el.textContent;
+    el.innerHTML = [...text].map((ch, i) => `<span class="eyebrow-letter" style="animation-delay:${i * 0.09}s">${ch}</span>`).join('');
+  });
+}
+
+function startTutorial() {
+  const hero = document.getElementById('hero');
+  hero.style.opacity = '0';
+  hero.style.transition = 'opacity 0.4s ease';
+  setTimeout(() => {
+    hero.style.display = 'none';
+    document.getElementById('app').classList.add('visible');
+    document.getElementById('bottomNav').classList.add('visible');
+    updateStep(1);
+    window.scrollTo(0,0);
+  }, 400);
+}
+
+function goToStep(n) {
+  if (n < 1 || n > totalSteps) return;
+  currentStep = n;
+  updateStep(n);
+}
+function nextStep() {
+  if (currentStep < totalSteps) {
+    currentStep++;
+    updateStep(currentStep);
+  } else {
+    showCompletion();
+  }
+}
+function prevStep() {
+  if (currentStep > 1) { currentStep--; updateStep(currentStep); }
+}
+
+function updateStep(n) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step' + n)?.classList.add('active');
+
+  document.querySelectorAll('.side-step').forEach((btn, i) => {
+    btn.classList.remove('active','completed');
+    const num = btn.querySelector('.side-step-num');
+    if (i < n - 1) { btn.classList.add('completed'); num.innerHTML = '<i data-lucide="check"></i>'; }
+    else            { num.textContent = (i + 1); }
+    if (i === n - 1) btn.classList.add('active');
+  });
+
+  document.getElementById('sideProgressFill').style.width = (n / totalSteps * 100) + '%';
+  document.getElementById('sideProgressLabel').textContent = n + ' / ' + totalSteps + ' שלבים';
+
+  document.getElementById('prevBtn').classList.toggle('hidden', n === 1);
+  document.getElementById('nextBtn').innerHTML = n === totalSteps
+    ? 'סיום <i data-lucide="check" class="icon-sm"></i>'
+    : 'הבא <i data-lucide="arrow-left" class="icon-sm"></i>';
+
+  const activeNav = document.querySelectorAll('.side-step')[n-1];
+  if (activeNav) activeNav.scrollIntoView({behavior:'smooth', block:'nearest'});
+
+  window.scrollTo({top:0, behavior:'smooth'});
+  setTimeout(triggerReveal, 100);
+  setTimeout(() => lucide.createIcons(), 0);
+}
+
+function triggerReveal() {
+  const active = document.querySelector('.step.active');
+  if (!active) return;
+  active.querySelectorAll('.reveal').forEach((el, i) => {
+    setTimeout(() => el.classList.add('visible'), i * 130);
+  });
+}
+
+function sideNav(n) {
+  goToStep(n);
+  if (window.innerWidth <= 768) closeSidebar();
+}
+function toggleSidebar() {
+  const open = document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarBackdrop').classList.toggle('open');
+  document.getElementById('menuToggle').setAttribute('aria-expanded', open);
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarBackdrop').classList.remove('open');
+  document.getElementById('menuToggle').setAttribute('aria-expanded', 'false');
+}
+
+function toggleSettingsItem(btn) {
+  const item = btn.closest('.settings-item');
+  const open = item.classList.toggle('open');
+  btn.setAttribute('aria-expanded', open);
+}
+
+const dreamReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function updateDreamTimeline(tl) {
+  const steps = [...tl.querySelectorAll('.dream-step')];
+  const triggerY = window.innerHeight * 0.5;
+  const centers = steps.map(s => {
+    const r = s.querySelector('.dream-node').getBoundingClientRect();
+    return r.top + r.height / 2;
+  });
+  steps.forEach((step, i) => {
+    step.classList.toggle('seen', centers[i] <= triggerY);
+    const conn = step.querySelector('.dream-connector');
+    if (!conn) return;
+    if (i === steps.length - 1) return;
+    const total = centers[i + 1] - centers[i];
+    const passed = triggerY - centers[i];
+    const pct = total > 0 ? Math.max(0, Math.min(1, passed / total)) : 0;
+    conn.style.setProperty('--fill', (pct * 100) + '%');
+  });
+}
+
+function dreamLoop() {
+  document.querySelectorAll('.dream-timeline').forEach(updateDreamTimeline);
+  if (!dreamReduceMotion) requestAnimationFrame(dreamLoop);
+}
+if (dreamReduceMotion) {
+  document.querySelectorAll('.dream-timeline').forEach(updateDreamTimeline);
+  window.addEventListener('scroll', () => document.querySelectorAll('.dream-timeline').forEach(updateDreamTimeline), { passive: true });
+} else {
+  requestAnimationFrame(dreamLoop);
+}
+
+function carouselNav(id, dir) {
+  const el = document.querySelector('[data-carousel="' + id + '"]');
+  if (!el) return;
+  const slides = [...el.querySelectorAll('.mini-carousel-slide')];
+  const dots = [...el.querySelectorAll('.mini-carousel-dot')];
+  const idx = slides.findIndex(s => s.classList.contains('active'));
+  const next = Math.max(0, Math.min(slides.length - 1, idx + dir));
+  if (next === idx) return;
+  slides[idx].classList.remove('active');
+  slides[next].classList.add('active');
+  dots[idx].classList.remove('active');
+  dots[next].classList.add('active');
+  el.querySelector('.mini-carousel-current').textContent = next + 1;
+  const btns = el.querySelectorAll('.mini-carousel-btn');
+  btns[0].disabled = next === 0;
+  btns[1].disabled = next === slides.length - 1;
+}
+
+function buildChecklist() {
+  document.getElementById('checklistEl').innerHTML = CHECKLIST.map(item => `
+    <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleCheck(this);}">
+      <div class="check-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div class="check-content">${item}</div>
+    </div>
+  `).join('');
+}
+function toggleCheck(item) {
+  const checked = item.classList.toggle('checked');
+  item.setAttribute('aria-checked', checked);
+  const done  = document.querySelectorAll('.check-item.checked').length;
+  const total = document.querySelectorAll('.check-item').length;
+  document.getElementById('checklistProgress').textContent = `${done} / ${total} הושלמו`;
+}
+function toggleStaticCheck(item) {
+  const checked = item.classList.toggle('checked');
+  item.setAttribute('aria-checked', checked);
+}
+
+function copyPrompt(btn) {
+  const text = btn.closest('.prompt-block').querySelector('.prompt-text').innerText;
+  const done = () => {
+    const label = btn.querySelector('span');
+    const icon  = btn.querySelector('[data-lucide]');
+    btn.classList.add('copied');
+    icon.setAttribute('data-lucide','check');
+    label.textContent = 'הועתק!';
+    lucide.createIcons();
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      icon.setAttribute('data-lucide','copy');
+      label.textContent = 'העתק';
+      lucide.createIcons();
+    }, 1800);
+  };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  } else {
+    fallbackCopy(text, done);
+  }
+}
+function fallbackCopy(text, cb) {
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(ta);
+  cb();
+}
+
+function showCompletion() {
+  closeSidebar();
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('bottomNav').style.display = 'none';
+  document.getElementById('completion').classList.add('visible');
+  const completionVideo = document.querySelector('.completion-video');
+  completionVideo.currentTime = 0;
+  completionVideo.play();
+  lucide.createIcons();
+}
+function restartTutorial() {
+  document.getElementById('completion').classList.remove('visible');
+  document.querySelector('.completion-video').pause();
+  document.getElementById('app').style.display = 'flex';
+  const bottomNav = document.getElementById('bottomNav');
+  bottomNav.style.display = '';
+  bottomNav.classList.add('visible');
+  currentStep = 1;
+  updateStep(1);
+  document.querySelectorAll('.check-item').forEach(i => i.classList.remove('checked'));
+  document.getElementById('checklistProgress').textContent = `0 / ${CHECKLIST.length} הושלמו`;
+}
+</script>
+<script src="htmleditor.js?v=1"></script>
+
+
+</body></html>

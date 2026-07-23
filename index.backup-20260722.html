@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מוח חכם לקלוד קוד — לומדה אינטראקטיבית</title>
+<meta name="description" content="לומדה אינטראקטיבית: איך בונים לקלוד קוד מערכת זיכרון אמיתית — CLAUDE.md, קטלוג זיכרון וסקיל אישי שממלא אותו לבד.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+:root {
+  --primary:      #000000;
+  --secondary:    #FDD3DD;
+  --amber:        #BBD23C;
+  --gray:         #8E8B88;
+  --black:        #000000;
+  --white:        #FFFFFF;
+  --offwhite:     #FAF8F2;
+  --page-bg:      #fcfaf6;
+  --page-bg-alt:  var(--offwhite);
+  --glass-bg:     rgba(255,255,255,0.6);
+  --glass-border: rgba(255,255,255,0.3);
+  --glass-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  --ease-out:     cubic-bezier(0.16,1,0.3,1);
+  --spring:       cubic-bezier(0.34,1.56,0.64,1);
+  --content-max:  1040px;
+  --user-border:   var(--secondary);
+  --claude-border: var(--black);
+  --info-border:   var(--gray);
+  --header-h:  96px;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { direction:rtl; scroll-behavior:smooth; }
+body { font-family:'Heebo',sans-serif; color:var(--black); background:var(--page-bg); line-height:1.7; overflow-x:hidden; }
+h1,h2,h3,h4 { font-family:'Rubik',sans-serif; font-weight:800; line-height:1.3; }
+img { max-width:100%; }
+button { font: inherit; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; border-radius: 4px; }
+
+/* ===== Logo Bar ===== */
+.logo-bar {
+  width:100%; height:var(--header-h); background:var(--secondary); padding:2px 20px;
+  display:flex; align-items:center; justify-content:center;
+  direction:ltr; z-index:500;
+  border-bottom:1px solid rgba(0,0,0,0.06);
+  position:absolute; top:0; left:0; right:0;
+}
+.app-logo-bar { position:fixed; top:0; left:0; right:0; z-index:500; background:var(--secondary); }
+.logo-bar-center { width:calc(100% - 56px); max-width:410px; height:auto; display:block; }
+
+/* ===== Hero ===== */
+.hero {
+  position:relative; min-height:100vh;
+  display:flex; align-items:flex-end; justify-content:center;
+  overflow:hidden;
+  background:linear-gradient(135deg,#FAF8F2 0%,#F5F2E7 50%,#FAF8F2 100%);
+}
+.hero-video { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:0; }
+.hero-overlay { position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.45); z-index:1; }
+.hero-side-fade { position:absolute; top:0; width:20%; height:100%; z-index:2; pointer-events:none; }
+.hero-side-fade.left  { left:0;  background:linear-gradient(to right,rgba(242,239,232,1) 0%,rgba(242,239,232,0) 100%); }
+.hero-side-fade.right { right:0; background:linear-gradient(to left, rgba(242,239,232,1) 0%,rgba(242,239,232,0) 100%); }
+
+.hero-content {
+  position:absolute; z-index:3; text-align:center;
+  padding:2rem 3rem 2.5rem; max-width:640px; width:90%;
+  background:rgba(255,255,255,0.45);
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  border-radius:20px; border:1px solid rgba(255,255,255,0.4);
+  left:50%; top:10vh; transform:translateX(-50%);
+  transition:top 1.2s cubic-bezier(0.25,1,0.5,1);
+}
+.hero-badge {
+  display:inline-flex; align-items:center; gap:6px; padding:4px 16px;
+  background:rgba(0,0,0,0.06); color:var(--primary);
+  border-radius:50px; font-size:0.78rem; font-weight:700; margin-bottom:1rem;
+  opacity:0; transform:translateY(20px);
+}
+.hero-content h1 { font-size:clamp(1.9rem,4.5vw,2.9rem); font-weight:800; margin-bottom:0.4rem; opacity:0; transform:translateY(30px); letter-spacing:0.02em; }
+.hero-title-eyebrow {
+  display:inline-block; font-size:0.6em; font-weight:700; letter-spacing:0.28em;
+  color:var(--amber); text-transform:uppercase; margin-bottom:0.6rem;
+  padding:0.35em 0.9em; border:2px solid var(--amber); border-radius:50px;
+}
+.hero-subtitle    { font-size:clamp(1rem,2vw,1.15rem); color:rgba(0,0,0,0.8); font-weight:600; margin-bottom:0.5rem; opacity:0; transform:translateY(30px); }
+.hero-content p   { font-size:clamp(0.88rem,1.8vw,1rem); color:rgba(0,0,0,0.7); margin-bottom:1.5rem; opacity:0; transform:translateY(30px); }
+.hero-btn {
+  display:inline-block; padding:15px 46px;
+  background:var(--black); color:var(--white);
+  border:none; border-radius:50px;
+  font-family:'Heebo',sans-serif; font-size:1.1rem; font-weight:600;
+  cursor:pointer; opacity:0; transform:translateY(30px);
+  transition:transform 0.2s var(--spring), box-shadow 0.2s;
+}
+.hero-btn:hover, .hero-btn:focus-visible { transform:translateY(-2px); box-shadow:0 8px 30px rgba(0,0,0,0.2); }
+
+.hero.animate .hero-badge    { animation:fadeUp 0.8s var(--ease-out) 0.3s forwards; }
+.hero.animate h1             { animation:fadeUp 0.8s var(--ease-out) 0.5s forwards; }
+.hero.animate .hero-subtitle { animation:fadeUp 0.8s var(--ease-out) 0.7s forwards; }
+.hero.animate p              { animation:fadeUp 0.8s var(--ease-out) 0.9s forwards; }
+.hero.animate .hero-btn      { animation:fadeUp 0.8s var(--ease-out) 1.1s forwards; }
+@keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
+
+/* ===== App Layout ===== */
+.app { display:none; min-height:100vh; flex-direction:column; }
+.app.visible { display:flex; }
+.app-body { display:flex; align-items:flex-start; flex:1; padding-top:var(--header-h); }
+.main-content {
+  flex:1; min-width:0; padding:2rem 2rem 6rem;
+  max-width:var(--content-max); margin:0 auto; width:100%;
+}
+.menu-toggle {
+  display:none; align-items:center; justify-content:center;
+  width:38px; height:38px; border-radius:50%;
+  position:absolute; top:50%; right:16px; transform:translateY(-50%);
+  border:none; background:rgba(0,0,0,0.08); color:var(--black); cursor:pointer;
+  transition:background 0.2s;
+}
+.menu-toggle:hover { background:rgba(0,0,0,0.15); }
+.sidebar-backdrop { display:none; position:fixed; inset:0; top:var(--header-h); background:rgba(0,0,0,0.35); z-index:390; }
+.sidebar {
+  position:sticky; top:var(--header-h); align-self:flex-start;
+  width:250px; flex-shrink:0; height:calc(100vh - var(--header-h));
+  overflow-y:auto; overscroll-behavior:contain;
+  padding:1.75rem 1.5rem 2rem 1.25rem;
+  background:var(--page-bg-alt); border-left:1px solid rgba(0,0,0,0.07);
+}
+.side-progress-track { position:relative; height:3px; background:rgba(0,0,0,0.08); border-radius:3px; margin-bottom:0.5rem; overflow:hidden; }
+.side-progress-fill { position:absolute; top:0; right:0; left:0; height:100%; background:linear-gradient(90deg,var(--secondary),var(--amber)); transition:width 0.5s var(--ease-out); }
+.side-progress-label { font-size:0.72rem; font-weight:600; color:var(--gray); margin-bottom:1.6rem; }
+.side-steps { display:flex; flex-direction:column; gap:5px; }
+.side-step {
+  display:flex; align-items:center; gap:11px; width:100%;
+  padding:10px 10px; border:none; border-radius:10px; background:none;
+  cursor:pointer; font-family:'Heebo',sans-serif; font-size:0.95rem; font-weight:600;
+  color:rgba(0,0,0,0.65); text-align:right; line-height:1.35;
+  transition:background 0.15s, color 0.15s;
+}
+.side-step:hover { background:rgba(0,0,0,0.05); color:var(--black); }
+.side-step.completed { color:var(--primary); }
+.side-step.active { background:var(--black); color:var(--white); font-weight:700; }
+.side-step-num {
+  width:26px; height:26px; border-radius:50%; flex-shrink:0;
+  background:rgba(0,0,0,0.07);
+  display:flex; align-items:center; justify-content:center;
+  font-size:0.72rem; font-weight:700;
+  transition:background 0.15s, color 0.15s;
+}
+.side-step-num [data-lucide] { width:12px; height:12px; stroke-width:3; }
+.side-step.completed .side-step-num { background:var(--primary); color:var(--white); }
+.side-step.active    .side-step-num { background:var(--amber); color:var(--black); }
+
+/* ===== Step ===== */
+.step { display:none; }
+.step.active { display:block; }
+.step-header { margin-bottom:1.75rem; padding-bottom:1.25rem; border-bottom:2px solid rgba(0,0,0,0.12); }
+.step-number { font-size:0.75rem; font-weight:700; color:var(--primary); letter-spacing:0.14em; text-transform:uppercase; }
+.step-title  { font-size:clamp(1.9rem,3.6vw,2.7rem); font-weight:800; margin:0.3rem 0; color:#000000; }
+.step-desc   { font-size:1.08rem; color:rgba(0,0,0,0.7); }
+.section-label { display:flex; align-items:center; gap:8px; font-size:0.72rem; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--primary); margin:2rem 0 0.6rem; }
+.section-label:first-child { margin-top:0; }
+.hl-underline { position:relative; display:inline-block; }
+.hl-underline::after {
+  content:''; position:absolute; right:-6%; left:-6%; bottom:-0.08em; height:0.42em;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 40' preserveAspectRatio='none'%3E%3Cpath d='M14,26 C80,8 210,6 275,18' stroke='%23BBD23C' stroke-width='15' stroke-linecap='round' fill='none'/%3E%3Ccircle cx='284' cy='16' r='10' fill='%23BBD23C'/%3E%3C/svg%3E");
+  background-size:100% 100%; background-repeat:no-repeat; pointer-events:none;
+}
+
+/* ===== Legend Strip ===== */
+.legend-strip { display:flex; gap:1.25rem; padding:0.7rem 1.1rem; background:var(--offwhite); border-radius:10px; border:1px solid rgba(0,0,0,0.1); margin:0 0 1.25rem; flex-wrap:wrap; }
+.legend-item { display:flex; align-items:center; gap:0.45rem; font-size:0.8rem; }
+.legend-dot  { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+.legend-dot.user   { background:var(--secondary); }
+.legend-dot.claude { background:var(--claude-border); }
+.legend-dot.info   { background:var(--gray); }
+
+/* ===== Step Cards ===== */
+.steps-list { display:flex; flex-direction:column; gap:0.65rem; margin:0.5rem 0 1.25rem; }
+.step-card {
+  display:flex; gap:0.9rem; align-items:flex-start;
+  padding:0.95rem 1.15rem; border-radius:14px;
+  border:1px solid rgba(0,0,0,0.06); background:#fff;
+  box-shadow:0 2px 8px rgba(0,0,0,0.03);
+  transition:box-shadow 0.2s, transform 0.2s var(--spring);
+}
+.step-card:hover { box-shadow:0 4px 16px rgba(0,0,0,0.07); transform:translateY(-1px); }
+.step-card.user   { border-right:3px solid var(--user-border);   background:#FCE4EA; }
+.step-card.claude { border-right:3px solid var(--claude-border); background:#ECECE9; }
+.step-card.info   { border-right:3px solid var(--amber);         background:#fff; }
+.step-num-badge { min-width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700; flex-shrink:0; }
+.step-card.user   .step-num-badge { background:rgba(253,211,221,0.55); color:var(--black); }
+.step-card.claude .step-num-badge { background:var(--claude-border); color:#fff; }
+.step-card.info   .step-num-badge { background:rgba(142,139,136,0.15); color:var(--primary); font-style:italic; }
+.step-who { font-size:0.95rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:0.3rem; }
+.step-card.user   .step-who { color:var(--black); }
+.step-card.claude .step-who { color:var(--claude-border); }
+.step-card.info   .step-who { color:var(--primary); }
+.step-card-body p  { font-size:1rem; color:#222; margin:0; }
+.step-card-body p + p { margin-top:0.4rem; }
+.step-note { font-size:0.8rem; color:var(--gray); margin-top:0.35rem; font-style:italic; }
+ul.content-list { padding-right:18px; display:flex; flex-direction:column; gap:4px; font-size:0.98rem; color:#222; margin-top:0.5rem; }
+.step-card-body ul.content-list { margin-top:0.45rem; }
+
+/* ===== Callout / inline code / quote ===== */
+.callout { padding:0.9rem 1.1rem; border-radius:12px; margin:0.75rem 0; font-size:0.88rem; display:flex; gap:0.6rem; align-items:flex-start; }
+.callout [data-lucide] { flex-shrink:0; margin-top:2px; }
+.callout.warning { background:#fdf0ec; border:1px solid #e8c0b4; color:#7a3a2e; }
+.callout.tip     { background:#f0f5f0; border:1px solid #b4d4b4; color:#2a4a2a; }
+.callout strong  { font-weight:700; }
+.callout ul { margin-top:6px; padding-right:16px; display:flex; flex-direction:column; gap:3px; }
+.callout-body { flex:1; }
+.ci { font-family:'SFMono-Regular',Consolas,monospace; font-size:0.8rem; background:#f0e8e4; padding:2px 7px; border-radius:5px; color:#2d2420; direction:ltr; display:inline-block; }
+.quote-block { border-right:3px solid var(--gray); background:#fff; padding:0.8rem 1.1rem; border-radius:10px; font-style:italic; font-size:0.87rem; color:#333; margin:0.6rem 0; }
+
+/* ===== Prompt Block ===== */
+.prompt-block {
+  position:relative; background:#231d1a; color:#fbf6f1;
+  padding:1.2rem 1.3rem 1rem; border-radius:12px; margin:0.75rem 0 0.5rem;
+  font-size:0.87rem; line-height:1.85; direction:rtl; text-align:right;
+  max-height:340px; overflow-y:auto;
+}
+.prompt-text { white-space:pre-wrap; display:block; }
+.prompt-copy-btn {
+  position:sticky; float:left; top:0.65rem;
+  display:flex; align-items:center; gap:5px;
+  background:rgba(255,255,255,0.14); border:1px solid rgba(255,255,255,0.3); color:#fbf6f1;
+  border-radius:50px; padding:5px 13px; font-size:0.72rem; font-family:'Heebo',sans-serif;
+  cursor:pointer; transition:background 0.2s, transform 0.15s var(--spring);
+  margin-bottom:0.6rem; margin-left:0.2rem;
+}
+.prompt-copy-btn [data-lucide] { width:13px; height:13px; }
+.prompt-copy-btn:hover { background:rgba(255,255,255,0.24); }
+.prompt-copy-btn.copied { background:var(--amber); color:var(--black); border-color:var(--amber); }
+
+/* ===== Flip Cards ===== */
+.flip-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:1.1rem; margin:0.75rem 0; }
+.flip-card { perspective:1000px; height:200px; cursor:pointer; }
+.flip-card-inner { position:relative; width:100%; height:100%; transition:transform 0.6s var(--ease-out); transform-style:preserve-3d; }
+.flip-card:hover .flip-card-inner, .flip-card:focus-visible .flip-card-inner, .flip-card.flipped .flip-card-inner { transform:rotateY(-180deg); }
+.flip-card:focus-visible { outline: 3px solid var(--amber); outline-offset: 4px; border-radius: 16px; }
+.flip-front, .flip-back { position:absolute; inset:0; backface-visibility:hidden; border-radius:16px; padding:1.3rem; display:flex; flex-direction:column; justify-content:center; }
+.flip-front { background:#fff; border:1.5px solid rgba(187,210,60,0.55); box-shadow:0 2px 10px rgba(0,0,0,0.04); }
+.flip-front .flip-icon { font-size:1.8rem; margin-bottom:0.5rem; }
+.flip-front h4 { font-size:1.05rem; font-weight:700; margin-bottom:0.3rem; color:var(--black); }
+.flip-front p { font-size:0.85rem; color:#555; line-height:1.5; }
+.flip-back { transform:rotateY(180deg); background:var(--black); color:#fff; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.18); font-size:0.87rem; line-height:1.6; overflow-y:auto; }
+.flip-card:nth-child(3n+2) .flip-back { background:#5c3a3e; }
+.flip-card:nth-child(3n+3) .flip-back { background:#5a6b1a; }
+.flip-hint { font-size:0.72rem; color:var(--gray); margin-top:auto; }
+
+/* ===== Accordion ===== */
+.settings-accordion { display:flex; flex-direction:column; gap:0.6rem; margin-top:0.5rem; }
+.settings-item { border:1.5px solid rgba(0,0,0,0.1); border-radius:14px; background:#fff; overflow:hidden; transition:box-shadow 0.2s; }
+.settings-item.open { box-shadow:0 4px 16px rgba(0,0,0,0.06); }
+.settings-item-head { display:flex; align-items:center; gap:0.7rem; padding:0.9rem 1.1rem; cursor:pointer; user-select:none; background:none; border:none; width:100%; font-family:'Heebo',sans-serif; text-align:right; color:var(--black); }
+.settings-item-head:hover { background:rgba(0,0,0,0.03); }
+.settings-icon { width:34px; height:34px; border-radius:50%; background:var(--secondary); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.settings-icon [data-lucide] { width:17px; height:17px; stroke-width:1.8; }
+.settings-item-title { font-weight:700; font-size:0.98rem; flex:1; }
+.settings-chevron { width:18px; height:18px; color:var(--gray); flex-shrink:0; transition:transform 0.25s var(--ease-out); }
+.settings-item.open .settings-chevron { transform:rotate(180deg); }
+.settings-item-panel { max-height:0; overflow:hidden; transition:max-height 0.35s var(--ease-out); }
+.settings-item.open .settings-item-panel { max-height:1200px; }
+.settings-item-panel-inner { padding:0 1.1rem 1.1rem; border-top:1px solid rgba(0,0,0,0.06); }
+.settings-tab-sub { font-size:0.85rem; color:var(--gray); margin:0.85rem 0 0.9rem; }
+.settings-row { display:flex; align-items:flex-start; gap:0.65rem; padding:0.55rem 0; border-top:1px solid rgba(0,0,0,0.05); }
+.settings-row:first-of-type { border-top:none; }
+.settings-check { width:20px; height:20px; border-radius:6px; background:var(--amber); display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px; }
+.settings-check svg { width:12px; height:12px; stroke:var(--black); stroke-width:3; fill:none; }
+.settings-row-body { flex:1; }
+.settings-row-title { font-weight:700; font-size:0.88rem; }
+.settings-row-desc { font-size:0.83rem; color:#555; margin-top:0.15rem; }
+
+/* ===== Reveal ===== */
+.reveal { opacity:0; transform:translateY(18px); transition:opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out); }
+.reveal.visible { opacity:1; transform:translateY(0); }
+
+/* ===== Bottom Nav ===== */
+.bottom-nav {
+  position:fixed; bottom:0; left:0; right:0; z-index:200;
+  display:none; align-items:center; justify-content:space-between;
+  padding:0.9rem 2rem;
+  background:rgba(255,255,255,0.97);
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  border-top:1px solid rgba(0,0,0,0.06);
+}
+.bottom-nav.visible { display:flex; }
+.nav-btn { display:flex; align-items:center; gap:6px; padding:10px 28px; border-radius:50px; font-family:'Heebo',sans-serif; font-size:0.88rem; font-weight:600; cursor:pointer; border:2px solid var(--black); background:none; color:var(--black); transition:transform 0.15s var(--spring), box-shadow 0.2s; }
+.nav-btn.primary { background:var(--amber); color:var(--black); border-color:var(--amber); }
+.nav-btn:hover, .nav-btn:focus-visible { box-shadow:0 4px 12px rgba(0,0,0,0.12); }
+.nav-btn:active { transform:scale(0.97); }
+.nav-btn.hidden { visibility:hidden; }
+
+/* ===== Checklist ===== */
+.checklist-progress { font-size:0.83rem; color:var(--primary); font-weight:600; margin-bottom:0.75rem; }
+.checklist { display:flex; flex-direction:column; gap:0.45rem; margin:0.5rem 0; }
+.check-item { display:flex; align-items:flex-start; gap:0.7rem; padding:0.8rem 1rem; border:1px solid rgba(0,0,0,0.06); border-radius:12px; cursor:pointer; transition:opacity 0.3s, background 0.15s; }
+.check-item:hover { background:var(--offwhite); }
+.check-item.checked { opacity:0.5; }
+.check-box { width:22px; height:22px; border:2px solid rgba(0,0,0,0.14); border-radius:6px; flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:background 0.2s, border-color 0.2s; margin-top:2px; }
+.check-item.checked .check-box { background:var(--primary); border-color:var(--primary); }
+.check-box svg { width:14px; height:14px; stroke:#fff; stroke-width:3; fill:none; opacity:0; transition:opacity 0.2s; }
+.check-item.checked .check-box svg { opacity:1; }
+.check-content { font-size:0.91rem; color:#2d2420; }
+
+/* ===== Completion ===== */
+.completion { position:relative; overflow:hidden; display:none; min-height:100vh; align-items:center; justify-content:flex-start; text-align:center; padding:2rem; padding-top:calc(var(--header-h) + 2rem); background:#f2efe8; }
+.completion.visible { display:flex; flex-direction:column; }
+.completion-video { position:absolute; top:var(--header-h); left:50%; transform:translateX(-50%); height:calc(100% - var(--header-h)); width:auto; max-width:none; object-fit:contain; object-position:center center; z-index:0; }
+.completion-mascot { position:absolute; top:50%; transform:translateY(-50%); width:min(26vw, 340px); height:auto; z-index:1; }
+.completion-mascot.left  { left:2rem; }
+.completion-mascot.right { right:2rem; }
+.completion-content { position:relative; z-index:2; max-width:520px; }
+.completion-goodluck { font-size:clamp(2.1rem,5.5vw,3.2rem); font-weight:900; color:#fff; margin-top:1.25rem; }
+.completion-goodluck .wave-letter { display:inline-block; opacity:0; text-shadow:0 1px 0 rgba(0,0,0,0.55), 0 3px 6px rgba(0,0,0,0.5), 0 8px 20px rgba(0,0,0,0.4); animation:waveIn 0.7s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+.completion-goodluck .wave-letter:nth-child(1) { animation-delay:0.05s; }
+.completion-goodluck .wave-letter:nth-child(2) { animation-delay:0.10s; }
+.completion-goodluck .wave-letter:nth-child(3) { animation-delay:0.15s; }
+.completion-goodluck .wave-letter:nth-child(4) { animation-delay:0.20s; }
+.completion-goodluck .wave-letter:nth-child(5) { animation-delay:0.25s; }
+.completion-goodluck .wave-letter:nth-child(6) { animation-delay:0.30s; }
+.completion-goodluck .wave-letter:nth-child(7) { animation-delay:0.35s; }
+@keyframes waveIn { 0% { opacity:0; transform:translateY(26px) scale(0.7); } 55% { opacity:1; transform:translateY(-10px) scale(1.08); } 80% { transform:translateY(4px) scale(0.98); } 100% { opacity:1; transform:translateY(0) scale(1); } }
+.completion-actions { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+.completion-btn { display:flex; align-items:center; gap:7px; padding:12px 30px; border-radius:50px; font-family:'Heebo',sans-serif; font-size:0.97rem; font-weight:600; cursor:pointer; border:2px solid var(--black); text-decoration:none; transition:transform 0.15s var(--spring), box-shadow 0.2s; }
+.completion-btn.secondary { background:none; color:var(--primary); border-color:var(--primary); }
+.completion-btn:hover, .completion-btn:focus-visible { box-shadow:0 4px 16px rgba(0,0,0,0.12); transform:translateY(-1px); }
+
+/* ===== Icons ===== */
+[data-lucide] { width:20px; height:20px; stroke-width:1.8; vertical-align:middle; }
+.icon-sm  { width:16px; height:16px; }
+.icon-lg  { width:28px; height:28px; }
+
+/* ===== Skip link ===== */
+.skip-link {
+  position:absolute; right:1rem; top:-100px; z-index:1000;
+  background:var(--black); color:var(--white); padding:10px 20px; border-radius:8px;
+  transition:top 0.2s;
+}
+.skip-link:focus { top:1rem; }
+
+/* ===== Responsive ===== */
+@media (max-width:768px) {
+  :root { --header-h:52px; }
+  .logo-bar-center { max-width:218px; }
+  .main-content { padding:1.5rem 1rem 6rem; }
+  .bottom-nav { padding:0.8rem 1.1rem; }
+  .menu-toggle { display:flex; }
+  .sidebar {
+    position:fixed; top:var(--header-h); left:auto; right:0; bottom:0; height:auto;
+    width:82vw; max-width:300px; z-index:400;
+    transform:translateX(100%); transition:transform 0.3s var(--ease-out);
+    box-shadow:-8px 0 28px rgba(0,0,0,0.14);
+  }
+  .sidebar.open { transform:translateX(0); }
+  .sidebar-backdrop.open { display:block; }
+  .legend-strip { gap:0.7rem; }
+  .prompt-block { max-height:260px; }
+  .completion-mascot { width:min(18vw, 130px); }
+}
+@media (prefers-reduced-motion:reduce) {
+  *, *::before, *::after { animation-duration:0.01ms !important; transition-duration:0.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<a href="#mainContent" class="skip-link">דלגו לתוכן הראשי</a>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="hero">
+  <div class="logo-bar">
+    <img class="logo-bar-center" src="assets/images/LogoBanner.svg" alt="איריס פלד">
+  </div>
+  <video class="hero-video" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+    <source src="assets/videos/kling_intro.mp4" type="video/mp4">
+  </video>
+  <div class="hero-overlay"></div>
+  <div class="hero-side-fade left"></div>
+  <div class="hero-side-fade right"></div>
+  <div class="hero-content">
+    <div class="hero-badge"><i data-lucide="brain-cog" class="icon-sm"></i> לומדה אינטראקטיבית · איריס פלד · 2026</div>
+    <h1><span class="hero-title-eyebrow">Memory Playbook</span><br>מוח חכם לקלוד קוד</h1>
+    <p class="hero-subtitle">איך בונים לקלוד קוד זיכרון אמיתי, בלי להעמיס עליו</p>
+    <p>שבעה שלבים קצרים, ובסוף הדרך מחכה לכם CLAUDE.md גלובלי משלכם וקטלוג זיכרון מסודר — בלי לאבד מידע בין שיחה לשיחה.</p>
+    <p style="font-size:0.78rem; margin-bottom:1.4rem; color:rgba(0,0,0,0.55); font-style:italic;">מבוססת על ההכרזה האחרונה של אנתרופיק, יולי 2026 — הרצאתו של מהנדס קלוד Lamis Mukta על התפתחות זיכרון סוכני ה-AI: משיחה בודדת לזיכרון מתמשך.</p>
+    <button class="hero-btn" onclick="startTutorial()">בואו נתחיל ←</button>
+  </div>
+</section>
+
+<!-- ===== APP ===== -->
+<div class="app" id="app">
+  <div class="logo-bar app-logo-bar">
+    <img class="logo-bar-center" src="assets/images/LogoBanner.svg" alt="איריס פלד">
+    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()" aria-label="פתחו תפריט שלבים" aria-expanded="false"><i data-lucide="menu"></i></button>
+  </div>
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+
+  <div class="app-body">
+    <aside class="sidebar" id="sidebar" aria-label="ניווט בין שלבי הלומדה">
+      <div class="side-progress-track"><div class="side-progress-fill" id="sideProgressFill" style="width:0%"></div></div>
+      <div class="side-progress-label" id="sideProgressLabel">1 / 8 שלבים</div>
+
+      <div class="side-steps">
+        <button class="side-step active" onclick="sideNav(1)"><span class="side-step-num">1</span><span>למה קלוד לא זוכר</span></button>
+        <button class="side-step" onclick="sideNav(2)"><span class="side-step-num">2</span><span>מה זה CLAUDE.md</span></button>
+        <button class="side-step" onclick="sideNav(3)"><span class="side-step-num">3</span><span>מערכות הזיכרון</span></button>
+        <button class="side-step" onclick="sideNav(4)"><span class="side-step-num">4</span><span>בונים את הזיכרון</span></button>
+        <button class="side-step" onclick="sideNav(5)"><span class="side-step-num">5</span><span>סקילים</span></button>
+        <button class="side-step" onclick="sideNav(6)"><span class="side-step-num">6</span><span>ניהול מערכת הזיכרון</span></button>
+        <button class="side-step" onclick="sideNav(7)"><span class="side-step-num">7</span><span>מה קורה בקלוד ארגוני</span></button>
+        <button class="side-step" onclick="sideNav(8)"><span class="side-step-num">8</span><span>צ'קליסט סיכום</span></button>
+      </div>
+    </aside>
+
+    <main class="main-content" id="mainContent">
+      <div class="step-container">
+
+        <!-- ===== STEP 1 ===== -->
+        <div class="step active" id="step1">
+          <div class="step-header">
+            <span class="step-number">שלב 1</span>
+            <h2 class="step-title">למה קלוד לא <span class="hl-underline">זוכר</span> אתכם</h2>
+            <p class="step-desc">להבין קודם מה בכלל קורה מתחת למכסה, לפני שבונים פתרון</p>
+          </div>
+
+          <div class="reveal">
+            <div class="legend-strip">
+              <div class="legend-item"><div class="legend-dot user"></div><span><strong>אתם עושים</strong> — פעולה ידנית</span></div>
+              <div class="legend-item"><div class="legend-dot claude"></div><span><strong>קלוד עושה</strong> — ממתינים</span></div>
+              <div class="legend-item"><div class="legend-dot info"></div><span><strong>הסבר / מידע</strong></span></div>
+            </div>
+
+            <div class="steps-list">
+              <div class="step-card info">
+                <div class="step-num-badge">i</div>
+                <div class="step-card-body">
+                  <p>תפתחו שיחה חדשה עם קלוד ותבקשו ממנו לכתוב פוסט. הוא יכתוב טוב — אבל בסגנון גנרי, כי הוא לא יודע איך אתם בדרך כלל כותבים, מי הקהל שלכם, מה כבר ניסיתם ומה לא עבד.</p>
+                  <p>תסבירו לו הכל, הוא יתקן. מחר, בשיחה חדשה, תצטרכו להסביר שוב מההתחלה. קלוד לא "שוכח" אתכם באופן פעיל — הוא פשוט לא נושא איתו שום דבר משיחה לשיחה, אלא אם בניתם לו משהו שכן נשאר.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="callout warning">
+              <i data-lucide="triangle-alert" class="icon-sm"></i>
+              <div class="callout-body"><strong>לא לבלבל:</strong> ב-claude.ai יש הגדרת "Memory" בתפריט ה-Settings — אבל זה זיכרון נפרד לגמרי, ששייך לשיחות הרגילות באתר או באפליקציה. כל מה שכותבים שם לא מגיע ולא משפיע על Claude Code. הזיכרון שנלמד בלומדה הזו — <span class="ci">CLAUDE.md</span> וקבצי הזיכרון הנלווים — הוא מנגנון נפרד לגמרי, ספציפי ל-Claude Code בלבד.</div>
+            </div>
+
+            <div class="section-label"><i data-lucide="lightbulb" class="icon-sm"></i> אז מה כן עובד</div>
+            <div class="steps-list">
+              <div class="step-card info">
+                <div class="step-num-badge">i</div>
+                <div class="step-card-body">
+                  <p>זיכרון, בהקשר של Claude Code, הוא לא יכולת מובנית של המודל — הוא קבצי טקסט רגילים שאתם כותבים (או שקלוד כותב בשבילכם), שקלוד קורא בתחילת השיחה או תוך כדיה.</p>
+                  <p>במקום שהמודל "יזכור" אתכם, אתם בונים לו ארכיון קבוע שהוא יודע לפתוח בכל פעם מחדש. הפעולה הזו — איך הארכיון בנוי, מה נכנס לתוכו, מתי קלוד פותח כל חלק — נקראת <strong>הנדסת קונטקסט (Context Engineering)</strong>.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="quote-block">אינטליגנציה גולמית של המודל, כמה שתהיה חזקה, היא תנאי הכרחי אבל לא מספיק. מודל חזק שמגיע "מהקופסה" לא מכיר את בסיס הקוד שלכם, את הלקוחות שלכם, את ההעדפות הספציפיות שלכם — וכל עוד אין לו הקשר, הוא לא יכול לצבור ידע או ללמוד מטעויות לאורך זמן, גם אם הוא "חכם" מאוד ברמה הכללית.</div>
+
+            <div class="callout tip">
+              <i data-lucide="lightbulb" class="icon-sm"></i>
+              <div class="callout-body">הנדסת הקונטקסט היא מה שהופך את אותה אינטליגנציה גולמית לנכס שעובד באמת בשבילכם — בלי לשנות את המודל עצמו, רק את מה שהוא יודע עליכם. בגלל זה קוראים לזיכרון <strong>מכפיל כוח (Force Multiplier)</strong>: הוא לא מוסיף חוכמה למודל, הוא מכפיל את התועלת שאתם כבר מקבלים ממנה.</div>
+            </div>
+
+            <p class="step-desc" style="margin-top:1.25rem;">אז איך בעצם בונים זיכרון כזה בפועל? מסתבר שיש כמה דרכים, מהפשוטה ביותר ועד למתקדמת — וזה בדיוק מה שנראה בשלב הבא.</p>
+          </div>
+        </div>
+
+        <!-- ===== STEP 2 ===== -->
+        <div class="step" id="step2">
+          <div class="step-header">
+            <span class="step-number">שלב 2</span>
+            <h2 class="step-title">בונים לקלוד <span class="hl-underline">מוח חכם</span>, בלי לעמיס עליו</h2>
+            <p class="step-desc">המטרה: לתת לקלוד "מוח" שמכיר אתכם — בלי שהוא יתנפח</p>
+          </div>
+
+          <div class="reveal">
+            <div class="steps-list">
+              <div class="step-card info">
+                <div class="step-num-badge">i</div>
+                <div class="step-card-body">
+                  <p>המטרה שלנו: לתת לקלוד "מוח" שמכיר אתכם — מי אתם, במה אתם עוסקים, איך אתם כותבים, מה ההעדפות שלכם.</p>
+                  <p>הנקודה הראשונה שכדאי לדעת על קלוד קוד: בתחילת כל שיחה, בלי יוצא מן הכלל, הוא קורא אוטומטית קובץ אחד ספציפי — <span class="ci">CLAUDE.md</span>, שיושב בתיקיית <span class="ci">.claude</span>.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="callout warning">
+              <i data-lucide="triangle-alert" class="icon-sm"></i>
+              <div class="callout-body"><strong>הבעיה:</strong> אם תדחסו לתוך הקובץ הזה את כל מה שקלוד אי פעם צריך לדעת עליכם — מי אתם, איך אתם כותבים, איזה צבעים אתם אוהבים, כל באג שאי פעם קרה — הוא יתנפח. וכיוון שהוא נטען בתחילת כל שיחה, גם כשהמשימה לא קשורה לרוב התוכן שבו, כל התפיחות הזו נטענת שוב ושוב לחינם, ותופסת מקום בחלון הקונטקסט שיכול היה לשמש למשימה עצמה. לתופעה הזו יש שם רשמי: <strong>Context Bloat</strong> — נפיחות הקונטקסט.</div>
+            </div>
+
+            <div class="section-label"><i data-lucide="check-circle" class="icon-sm"></i> הפתרון</div>
+            <div class="steps-list">
+              <div class="step-card claude">
+                <div class="step-num-badge"><i data-lucide="bot" class="icon-sm"></i></div>
+                <div class="step-card-body">
+                  <p>לא לשים את התוכן עצמו ב-<span class="ci">CLAUDE.md</span> — אלא קטלוג קצר שמפנה אליו. קטלוג כזה (<span class="ci">memory-ref.md</span>) הוא רשימה קצרה בסגנון "יש קובץ על מי אתם, יש קובץ על סגנון הכתיבה, יש קובץ על העיצוב".</p>
+                  <p>הקטלוג נטען בכל שיחה כי הוא זעיר, אבל הקבצים עצמם — המדפים — נפתחים רק כשהמשימה הנוכחית באמת דורשת אותם. העיקרון הזה נקרא <strong>חשיפה הדרגתית (Progressive Disclosure)</strong>: חושפים לקלוד רק את מה שהוא צריך, בדיוק כשהוא צריך את זה, ולא רגע לפני.</p>
+                </div>
+              </div>
+            </div>
+
+            <p class="step-desc">נקודה חשובה לגבי המדפים האלה: הם לא מתעדכנים לבד. יש כאן בעצם שני סוגי מדפים, עם שני כללים שונים:</p>
+
+            <div class="settings-accordion">
+              <div class="settings-item">
+                <button class="settings-item-head" onclick="toggleSettingsItem(this)" aria-expanded="false">
+                  <div class="settings-icon"><i data-lucide="id-card"></i></div>
+                  <div class="settings-item-title">מדפי זהות וסגנון</div>
+                  <i data-lucide="chevron-down" class="settings-chevron"></i>
+                </button>
+                <div class="settings-item-panel">
+                  <div class="settings-item-panel-inner">
+                    <p class="settings-tab-sub">כמו aboutme.md, brandvoice.md, design-system.md — משהו יציב יחסית.</p>
+                    <div class="settings-row">
+                      <div class="settings-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+                      <div class="settings-row-body">
+                        <div class="settings-row-title">משתנה רק כשאתם מבקשים</div>
+                        <div class="settings-row-desc">בלי בקשה מפורשת שלכם לעדכן, הקובץ פשוט יושב בתיקייה כמו שהוא — לא זז לבד.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="settings-item">
+                <button class="settings-item-head" onclick="toggleSettingsItem(this)" aria-expanded="false">
+                  <div class="settings-icon"><i data-lucide="notebook-pen"></i></div>
+                  <div class="settings-item-title">מדפי יומן</div>
+                  <i data-lucide="chevron-down" class="settings-chevron"></i>
+                </button>
+                <div class="settings-item-panel">
+                  <div class="settings-item-panel-inner">
+                    <p class="settings-tab-sub">כמו solutions.md, workwithme.md, inspiration.md — מתועדים אחרת.</p>
+                    <div class="settings-row">
+                      <div class="settings-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+                      <div class="settings-row-body">
+                        <div class="settings-row-title">"ספרן" ייעודי מעדכן אותם</div>
+                        <div class="settings-row-desc">סקיל שנקרא בסוף שיחה, סורק מה קרה, ומציע תוספות לאישורכם. איך בונים ספרן כזה — נראה בשלב הבא.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="callout tip">
+              <i data-lucide="lightbulb" class="icon-sm"></i>
+              <div class="callout-body">עדכון שקורה בתוך אותה שיחה שבה ביקשתם אותו נקרא <strong>זיכרון In-band</strong> — בניגוד לתהליכים שרצים אחר כך, מחוץ לשיחה עצמה, שעליהם נדבר בפרק הסגירה של הלומדה.</div>
+            </div>
+
+            <p class="step-desc" style="margin-top:1.25rem;">לפני שנבנה את המדפים בעצמנו, כדאי להכיר עוד משהו חשוב: לקלוד יש כבר מנגנון זיכרון In-band מובנה משלו, שפועל גם בלי שתבנו לו כלום. זה מה שנראה בשלב הבא.</p>
+          </div>
+        </div>
+
+        <!-- ===== STEP 3 ===== -->
+        <div class="step" id="step3">
+          <div class="step-header">
+            <span class="step-number">שלב 3</span>
+            <h2 class="step-title">שתי מערכות <span class="hl-underline">זיכרון</span></h2>
+            <p class="step-desc">מה קלוד כבר עושה לבד, ומה בונים בעצמכם</p>
+          </div>
+
+          <div class="reveal">
+            <p class="step-desc">קלוד מתחיל כל שיחה מאפס. הוא לא זוכר מי אתם, מה עשיתם אתמול, או מה החלטתם בשיחה הקודמת. כדי שיזכור דברים בין שיחות, יש אצל Claude Code שתי מערכות זיכרון נפרדות, וכדאי להכיר את ההבדל ביניהן: באחת אתם כותבים, בשנייה קלוד כותב לעצמו.</p>
+
+            <div class="steps-list" style="margin-top:1rem;">
+              <div class="step-card user">
+                <div class="step-num-badge">1</div>
+                <div class="step-card-body">
+                  <div class="step-who">אתם כותבים</div>
+                  <p><span class="ci">CLAUDE.md</span> — כללים, הוראות והעדפות שאתם רושמים, וקלוד קורא בתחילת כל שיחה. זה מה שלמדנו לבנות בשלב הקודם.</p>
+                </div>
+              </div>
+
+              <div class="step-card claude">
+                <div class="step-num-badge"><i data-lucide="bot" class="icon-sm"></i></div>
+                <div class="step-card-body">
+                  <div class="step-who">קלוד כותב</div>
+                  <p><strong>auto memory</strong> — תוך כדי עבודה קלוד רושם הערות שימושיות: פקודות שחזרו, תובנות מדיבוג, העדפות שגילה. הוא מחליט בעצמו מה שווה לזכור, בלי לעצור ולשאול אתכם.</p>
+                  <p class="step-note">זה בדיוק מה שנקרא בתיעוד הרשמי "כלי זיכרון עצמאיים" (Memory Tools) — אוטונומיה לסוכן להחליט מתי לקרוא, לכתוב ולעדכן זיכרון בזמן אמת. קבצים אלה נשמרים בנתיב <span class="ci">~/.claude/projects/&lt;project&gt;/memory/</span>.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="callout tip">
+              <i data-lucide="info" class="icon-sm"></i>
+              <div class="callout-body">שתי המערכות — <span class="ci">CLAUDE.md</span> ו-auto memory — נטענות שתיהן בתחילת כל שיחה.</div>
+            </div>
+
+            <div class="section-label"><i data-lucide="message-circle" class="icon-sm"></i> זיכרון יזום, הדרך הפשוטה</div>
+            <p class="step-desc">לא צריך לערוך קבצים ידנית כדי להוסיף ל-auto memory. שתי דרכים מהירות באמצע שיחה:</p>
+            <div class="quote-block">"תזכור שאני תמיד עובדת בעברית עם לשון נקבה"</div>
+            <p class="step-desc">או מקלידים <span class="ci"># </span> בתחילת ההודעה ואחריו ההוראה.</p>
+
+            <div class="callout warning">
+              <i data-lucide="triangle-alert" class="icon-sm"></i>
+              <div class="callout-body">שתי הדרכים שומרות ל-<strong>auto memory</strong> בלבד. אם אתם רוצים שההוראה תיכנס דווקא ל-<span class="ci">CLAUDE.md</span>, צריך לבקש זאת מפורשות: "תוסיף את זה ל-CLAUDE.md".</div>
+            </div>
+
+            <p class="step-desc" style="margin-top:1rem;">הדרך הפשוטה עובדת, אבל יש לה מחיר: קלוד מחליט לבד מה שווה לשמור, ואתם לא תמיד שולטים בתוכן שנכנס. בשלבים הבאים נבנה גרסה מתקדמת יותר — מדפי זיכרון משלכם, שבהם אתם מאשרים כל פריט לפני שהוא נשמר.</p>
+          </div>
+        </div>
+
+        <!-- ===== STEP 4 ===== -->
+        <div class="step" id="step4">
+          <div class="step-header">
+            <span class="step-number">שלב 4</span>
+            <h2 class="step-title">בונים לקלוד מוח חכם ש<span class="hl-underline">מכיר</span> אתכם</h2>
+            <p class="step-desc">עכשיו כשאתם מכירים את המבנה — הגיע הזמן לבנות אותו בפועל, בשליטה מלאה שלכם</p>
+          </div>
+
+          <div class="reveal">
+            <p class="step-desc">זה לא קורה בהודעה אחת. זה תהליך מובנה של כמה שלבים — אבל אל דאגה, קלוד קוד יבנה הכל עבורכם, אתם רק עונים על שאלון שבו הוא מראיין אתכם. בסוף כל שלב הוא מציג טיוטה וממתין לאישור שלכם לפני שהוא יוצר את הקובץ בפועל.</p>
+
+            <div class="section-label"><i data-lucide="folder-open" class="icon-sm"></i> שלב הכנה — לפני שמתחילים</div>
+            <div class="steps-list">
+              <div class="step-card user">
+                <div class="step-num-badge">1</div>
+                <div class="step-card-body">
+                  <div class="step-who">אתם</div>
+                  <p>צרו תיקייה לנכסים שלכם (למשל <span class="ci">My_Profile</span>) והכניסו אליה שני סוגי חומרים:</p>
+                  <ul class="content-list">
+                    <li>נכסים גרפיים — לוגו, פלטת צבעים, אייקונים או תמונות שכבר משמשים אתכם בפועל לעיצוב</li>
+                    <li>תוכן טקסטואלי — כ-10 טקסטים שכתבתם ואהבתם (פוסטים, מיילים, סיכומי פגישות), לניתוח סגנון הכתיבה שלכם</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="step-card claude">
+                <div class="step-num-badge"><i data-lucide="bot" class="icon-sm"></i></div>
+                <div class="step-card-body">
+                  <div class="step-who">קלוד</div>
+                  <p>מעתיקים את הפרומפט המלא למטה לקלוד קוד ומצעדים איתו שלב אחר שלב. בסיום כל שלב קלוד מציג טיוטה של הקובץ שיצר, ורק לאחר אישור — יוצר אותו בפועל בתיקייה שלכם. ממשיכים לשלב הבא רק אחרי אישור.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="callout tip">
+              <i data-lucide="map-pin" class="icon-sm"></i>
+              <div class="callout-body">איפה יושב הקובץ הגלובלי — Windows: <span class="ci">C:\Users\[שם המשתמש]\.claude\CLAUDE.md</span></div>
+            </div>
+
+            <div class="section-label"><i data-lucide="clipboard-list" class="icon-sm"></i> הפרומפט להעתקה</div>
+            <div class="prompt-block">
+              <button class="prompt-copy-btn" onclick="copyPrompt(this)"><i data-lucide="copy"></i><span>העתק</span></button>
+              <span class="prompt-text">אני רוצה לבנות את קובץ ה-CLAUDE.md הגלובלי שלי, הקובץ שאתה קורא בתחילת כל שיחה שלנו, כך שיהפוך למערכת זיכרון אישית שמכירה אותי ואת דרך העבודה שלי. נעבוד בשלבים. בכל שלב תיצור קובץ אחד לאחר שתראיין אותי, ובסוף השלב תציג לי טיוטה של הקובץ ותיצור אותו רק לאחר אישור שלי. את קבצי התוכן צור בתיקייה [שם התיקייה שלכם].
+
+שלב 1 - קובץ aboutme.md: מי אני, מה העיסוק שלי, מי קהל היעד אליו אני פונה בדרך כלל, מה הדברים שמאפיינים אותי. שאל אותי שאלות המשך עד שיהיה לך מספיק מידע עליי.
+
+שלב 2 - קובץ brandvoice.md: בקש ממני להדביק 5-10 טקסטים שכתבתי ואהבתי (או נתיב לקובץ שהכנתי), נתח מהם את הסגנון שלי, ושאל אותי שאלות השלמה: טון כתיבה - חם או פורמלי, סגנון ניסוח - משפטים קצרים או ארוכים, הומור, איך אני פונה לקהל. שאל שאלות המשך עד לקבלת כל המידע שנדרש לך.
+
+שלב 3 - קובץ design-system.md: בקש ממני את הנתיב לתיקיית הנכסים שהכנתי. הסתכל על הלוגו והקבצים שבה, חלץ מהם פלטת צבעים מדויקת (קודי HEX), ושאל אותי שאלות השלמה: פונטים, סגנון מועדף (נקי, צבעוני, מינימליסטי), מה אסור שיופיע - למשל אימוג'י. כלול בקובץ את הנתיב לתיקייה כדי שתמיד תדע איפה הנכסים שלי.
+
+שלב 4 - צור קובץ memory-ref.md. זה קובץ אינדקס לזיכרון: קובץ קצר שמפרט אילו קבצי זיכרון קיימים ומה יש בכל אחד. תחתיו צור הפניה לשלושה קבצי יומן נפרדים - workwithme.md (תובנות על סגנון עבודה), solutions.md (פתרונות לתקלות שנפתור בהמשך) ו-inspiration.md (רעיונות שלא מומשו) - כרגע ריקים לגמרי, רק עם כותרת והסבר שהם יתמלאו עם הזמן. הבהר בקובץ ש-aboutme.md, brandvoice.md ו-design-system.md מתעדכנים רק כשאבקש ממך זאת במפורש, ואילו שלושת קבצי היומן מיועדים להתמלא מאוחר יותר על ידי סקיל ייעודי.
+
+שלב 5 - צור את קובץ CLAUDE.md הגלובלי בנתיב ~/.claude/CLAUDE.md (אם כבר קיים שם קובץ, הצג לי אותו ושאל אם לעדכן, למזג או להחליף). הקובץ יכלול: מי אני במשפט, והפניה לקבצים בנתיבים המלאים שלהם, עם הוראה מתי לקרוא כל אחד: aboutme.md לפני כל משימה, brandvoice.md לפני כל משימת כתיבה, design-system.md לפני כל תוצר גרפי, memory-ref.md כדי לדעת אילו קבצי זיכרון קיימים ולאן ללכת. בסוף תיצור לי את טיוטת קובץ CLAUDE.md. תבדוק שיצרת את כל הקבצים שביקשתי, שכולם מסוג markdown וכולם בתיקייה שביקשתי. חכה לאישור שלי, ורק אחר כך אמת שכל הקבצים נוצרו.</span>
+            </div>
+
+            <div class="section-label"><i data-lucide="file-text" class="icon-sm"></i> הקבצים שייווצרו</div>
+            <p class="step-desc">הפכו כל כרטיס כדי לראות את התוכן:</p>
+            <div class="flip-grid">
+              <div class="flip-card" tabindex="0">
+                <div class="flip-card-inner">
+                  <div class="flip-front"><div class="flip-icon">🙋</div><h4>aboutme.md</h4><span class="flip-hint">העבירו את העכבר ←</span></div>
+                  <div class="flip-back">מי אתם, במה אתם עוסקים, מיהו קהל היעד שלכם, מה מאפיין אתכם.</div>
+                </div>
+              </div>
+              <div class="flip-card" tabindex="0">
+                <div class="flip-card-inner">
+                  <div class="flip-front"><div class="flip-icon">✍️</div><h4>brandvoice.md</h4><span class="flip-hint">העבירו את העכבר ←</span></div>
+                  <div class="flip-back">סגנון הכתיבה שלכם: טון, מבנה משפטים, איך אתם פותחים ומסיימים פנייה.</div>
+                </div>
+              </div>
+              <div class="flip-card" tabindex="0">
+                <div class="flip-card-inner">
+                  <div class="flip-front"><div class="flip-icon">🎨</div><h4>design-system.md</h4><span class="flip-hint">העבירו את העכבר ←</span></div>
+                  <div class="flip-back">פלטת צבעים, פונטים, סגנון עיצוב מועדף — כולל נתיב לתיקיית הנכסים שלכם.</div>
+                </div>
+              </div>
+              <div class="flip-card" tabindex="0">
+                <div class="flip-card-inner">
+                  <div class="flip-front"><div class="flip-icon">🗂️</div><h4>memory-ref.md</h4><span class="flip-hint">העבירו את העכבר ←</span></div>
+                  <div class="flip-back">קובץ הקטלוג: מפרט אילו קבצי זיכרון קיימים ומה יש בכל אחד, כולל שלושה קבצי יומן ריקים בשלב זה שיתמלאו בפרק על סקילים.</div>
+                </div>
+              </div>
+              <div class="flip-card" tabindex="0">
+                <div class="flip-card-inner">
+                  <div class="flip-front"><div class="flip-icon">🧠</div><h4>CLAUDE.md</h4><span class="flip-hint">העבירו את העכבר ←</span></div>
+                  <div class="flip-back">הקובץ הגלובלי שמפנה לכל הקבצים — זה שקלוד קורא בתחילת כל שיחה, ב-<span class="ci" style="background:transparent;color:#fff;padding:0;">~/.claude/CLAUDE.md</span>.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== STEP 5 ===== -->
+        <div class="step" id="step5">
+          <div class="step-header">
+            <span class="step-number">שלב 5</span>
+            <h2 class="step-title">הספרן: הסקיל שממלא את <span class="hl-underline">קבצי היומן</span></h2>
+            <p class="step-desc">שלושת קבצי היומן נשארו ריקים בשלב הקודם — הזמן לבנות מי שממלא אותם</p>
+          </div>
+
+          <div class="reveal">
+            <p class="step-desc">בשלב הקודם בנינו קטלוג ומדפי זהות מלאים — אבל שלושת קבצי היומן (<span class="ci">workwithme.md</span>, <span class="ci">solutions.md</span>, <span class="ci">inspiration.md</span>) נשארו ריקים, מוכנים אבל לא בשימוש. הם אמורים להתמלא עם הזמן, מתובנות שעולות בשיחות עתידיות. כדי שזה יקרה בפועל, בלי שתצטרכו לעשות זאת ידנית בכל פעם, בונים לזה <strong>סקיל</strong> — תהליך קבוע שיודע איך לעשות את זה שוב ושוב.</p>
+
+            <div class="steps-list" style="margin-top:1rem;">
+              <div class="step-card info">
+                <div class="step-num-badge">i</div>
+                <div class="step-card-body">
+                  <p><strong>מה זה סקיל:</strong> תהליך עבודה קבוע שקלוד יכול להפעיל שוב ושוב. במקום להסביר בכל שיחה מחדש כיצד לבצע משימה חוזרת, יוצרים סקיל שנשמר בתוך תיקייה שבמרכזה קובץ <span class="ci">SKILL.md</span>. דוגמאות: כתיבת הצעת מחיר, יצירת דשבורד, בניית לומדה — ובדיוק מה שנבנה כאן: אריזת שיחה ושמירתה לזיכרון.</p>
+                  <p class="step-note">דמיינו שאתם קולטים עובד חדש. בלי סקיל — אתם מסבירים לו מחדש בכל בוקר איך לעבוד. עם סקיל — הוא כבר קיבל את הנהלים בהתחלה, וזוכר אותם לתמיד.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="callout tip">
+              <i data-lucide="layers" class="icon-sm"></i>
+              <div class="callout-body"><strong>איך קלוד יודע איזה סקיל להפעיל:</strong> קלוד לא קורא את כל הסקילים המותקנים בכל שיחה — זה בדיוק אותו Context Bloat שדיברנו עליו קודם. הוא סורק קודם רק כותרת ותקציר קצר של כל סקיל (Front Matter — "כרטיס ביקור" בראש הקובץ). רק כשהתקציר מתאים למשימה — הוא פותח את קובץ ההוראות המלא. אותה חשיפה הדרגתית, הפעם על סקילים.</div>
+            </div>
+
+            <p class="step-desc">איפה נשמרים: בתיקייה <span class="ci">.claude/skills</span> — Claude Code קורא מתוכה אוטומטית בכל שיחה.</p>
+
+            <div class="section-label"><i data-lucide="download" class="icon-sm"></i> מקור הסקיל — בונים או מתקינים</div>
+            <p class="step-desc">כל האפשרויות מתחילות מ-Customize → Skills → +. הפכו כל כרטיס כדי לראות פרטים:</p>
+            <div class="flip-grid">
+              <div class="flip-card" tabindex="0">
+                <div class="flip-card-inner">
+                  <div class="flip-front"><div class="flip-icon">🎤</div><h4>Create with Claude</h4><span class="flip-hint">העבירו את העכבר ←</span></div>
+                  <div class="flip-back">בונים סקיל מאפס דרך ראיון קצר עם קלוד — הוא שואל, אתם עונים, הוא מרכיב את הקובץ.</div>
+                </div>
+              </div>
+              <div class="flip-card" tabindex="0">
+                <div class="flip-card-inner">
+                  <div class="flip-front"><div class="flip-icon">✏️</div><h4>Write skill instructions</h4><span class="flip-hint">העבירו את העכבר ←</span></div>
+                  <div class="flip-back">כתיבה ידנית של קובץ ההוראות בעצמכם — לשליטה מלאה על כל מילה.</div>
+                </div>
+              </div>
+              <div class="flip-card" tabindex="0">
+                <div class="flip-card-inner">
+                  <div class="flip-front"><div class="flip-icon">📤</div><h4>Upload a skill</h4><span class="flip-hint">העבירו את העכבר ←</span></div>
+                  <div class="flip-back">מעלים סקיל שכבר קיים אצלכם כקובץ — או ל-Browse skills לסקילים רשמיים.</div>
+                </div>
+              </div>
+              <div class="flip-card" tabindex="0">
+                <div class="flip-card-inner">
+                  <div class="flip-front"><div class="flip-icon">📦</div><h4>npx skills add</h4><span class="flip-hint">העבירו את העכבר ←</span></div>
+                  <div class="flip-back">פקודת התקנה קצרה ממאגר חיצוני (<span class="ci" style="background:transparent;color:#fff;padding:0;">npx skills add owner/repo</span>) — רק ממקורות שסומכים עליהם, כי קובץ עוין עלול להסתיר פקודות מזיקות. אתר skills.sh מרכז מאגר גדול, כולל סקילים רשמיים של אנתרופיק.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-label"><i data-lucide="clipboard-list" class="icon-sm"></i> התרגיל: בונים את הסקיל wrap</div>
+            <p class="step-desc">שלושת קבצי היומן וה-memory-ref.md כבר קיימים אצלכם משלב 4 — הסקיל לא יוצר אותם מחדש, רק כותב לתוכם. הפרומפט להעתקה:</p>
+            <div class="prompt-block">
+              <button class="prompt-copy-btn" onclick="copyPrompt(this)"><i data-lucide="copy"></i><span>העתק</span></button>
+              <span class="prompt-text">אני רוצה שתבנה לי סקיל בשם wrap. תפקידו לרוץ רק כשמפעילים אותו במפורש בסוף שיחה - בקריאה ישירה "/wrap" או במילות טריגר כמו "תארוז לי את השיחה" / "תסכם לי את השיחה" - ולא באופן אוטומטי בשום שלב אחר.
+
+כשמפעילים אותו, הוא צריך:
+1. לסקור את כל השיחה הנוכחית ולזהות שלושה סוגי תובנות: תובנות אישיות על סגנון העבודה שלי (שייכות ל-workwithme.md), תקלות או בעיות שצצו ואיך נפתרו (שייכות ל-solutions.md), ורעיונות שעלו במהלך השיחה ולא מומשו (שייכים ל-inspiration.md).
+2. להציג לי את כל התובנות שמצא כרשימה ממוספרת לפי שלוש הקטגוריות, בלי לכתוב שום דבר לקבצים עדיין.
+3. לחכות לאישור שלי - אני אבחר אילו פריטים לשמור, ואילו לדלג עליהם.
+4. לכתוב רק את הפריטים שאישרתי, כל אחד לקובץ הקיים המתאים לו בתיקיית הזיכרון שלי (workwithme.md / solutions.md / inspiration.md - הקבצים כבר קיימים, אין צורך ליצור אותם מחדש).
+5. לעדכן את memory-ref.md הקיים כך שהתיאור של כל קובץ ישקף את מה שבאמת יש בו עכשיו.
+
+חשוב: הסקיל לא נוגע ב-aboutme.md, ב-brandvoice.md או ב-design-system.md - אלה מתעדכנים רק לפי בקשה נפרדת ומפורשת ממני, לא דרך הסקיל הזה.
+
+בסוף, הצג לי את קובץ ה-SKILL.md שיצרת, ותזכיר לי להפעיל אותו בפועל דרך Customize → Skills → + לפני שהוא באמת ייכנס לשימוש.</span>
+            </div>
+
+            <div class="callout warning">
+              <i data-lucide="triangle-alert" class="icon-sm"></i>
+              <div class="callout-body"><strong>הסתייגות חשובה:</strong> סקילים לא "קורים לבד" — המערכת לא מזהה אוטומטית מה ראוי להפוך לסקיל. זו תמיד החלטה שלכם. הגישה נקראת <strong>Opinionated</strong> ("דעתנית") — תלויה בשיקול דעת אנושי, לא בזיהוי אוטומטי.</div>
+            </div>
+
+            <p class="step-desc" style="margin-top:1rem;">עכשיו יש לכם מערכת שלמה: קובץ קבוע, קטלוג, מדפי זהות, ומדפי יומן שמתמלאים כשאתם מבקשים זאת ובשליטתכם המלאה.</p>
+          </div>
+        </div>
+
+        <!-- ===== STEP 6 ===== -->
+        <div class="step" id="step6">
+          <div class="step-header">
+            <span class="step-number">שלב 6</span>
+            <h2 class="step-title">מתי בעצם מפעילים את <span class="hl-underline">wrap</span></h2>
+            <p class="step-desc">התשובה קשורה למשהו שכדאי להכיר על איך שיחה עם קלוד עובדת מבפנים</p>
+          </div>
+
+          <div class="reveal">
+            <div class="steps-list">
+              <div class="step-card info">
+                <div class="step-num-badge">i</div>
+                <div class="step-card-body">
+                  <p>לכל שיחה יש <strong>חלון הקשר (context window)</strong> — נפח המידע שקלוד "מחזיק בראש" באותו רגע. בכל הודעה שאתם שולחים, קלוד לא נזכר במה שהיה קודם — הוא קורא מחדש את כל השיחה מההתחלה.</p>
+                  <p>ככל שהשיחה מתארכת, שני דברים קורים במקביל: כל הודעה עולה יותר, וברגע מסוים קלוד מתחיל לאבד חדות לגבי מה שנאמר בתחילת השיחה, פשוט כי יש יותר מדי לקרוא.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="callout tip">
+              <i data-lucide="lightbulb" class="icon-sm"></i>
+              <div class="callout-body"><strong>המסקנה המעשית:</strong> לא מחכים שהשיחה "תיתקע" או שקלוד יתחיל לטעות בפרטים ישנים. אורזים מוקדם, בערך כשחלון ההקשר מגיע לאמצע. כדי לדעת איפה אתם עומדים — יש חיווי שמראה כמה מהחלון כבר תפוס, ואפשר לבדוק גם ישירות עם הפקודה <span class="ci">/context</span>.</div>
+            </div>
+
+            <div class="section-label"><i data-lucide="split" class="icon-sm"></i> שתי דרכים לפנות מקום</div>
+            <div class="settings-accordion">
+              <div class="settings-item">
+                <button class="settings-item-head" onclick="toggleSettingsItem(this)" aria-expanded="false">
+                  <div class="settings-icon"><i data-lucide="minimize-2"></i></div>
+                  <div class="settings-item-title">/compact</div>
+                  <i data-lucide="chevron-down" class="settings-chevron"></i>
+                </button>
+                <div class="settings-item-panel">
+                  <div class="settings-item-panel-inner">
+                    <p class="settings-tab-sub">מכווץ את היסטוריית השיחה לתקציר ומפנה מקום מיידית, בלי לפתוח שיחה חדשה.</p>
+                    <div class="settings-row">
+                      <div class="settings-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+                      <div class="settings-row-body">
+                        <div class="settings-row-title">קלוד בוחר מה לשמר</div>
+                        <div class="settings-row-desc">לא אתם — והתקציר נעלם יחד עם השיחה. מתאים לרגע שרק צריך אוויר באמצע משימה.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="settings-item">
+                <button class="settings-item-head" onclick="toggleSettingsItem(this)" aria-expanded="false">
+                  <div class="settings-icon"><i data-lucide="book-open-check"></i></div>
+                  <div class="settings-item-title">wrap</div>
+                  <i data-lucide="chevron-down" class="settings-chevron"></i>
+                </button>
+                <div class="settings-item-panel">
+                  <div class="settings-item-panel-inner">
+                    <p class="settings-tab-sub">עובד הפוך: אתם רואים בדיוק מה מוצע לשמור, ומאשרים פריט-פריט.</p>
+                    <div class="settings-row">
+                      <div class="settings-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+                      <div class="settings-row-body">
+                        <div class="settings-row-title">ההחלטות שלכם נשארות לצמיתות</div>
+                        <div class="settings-row-desc">בקבצי הזיכרון. מתאים לרגע שסוגרים נושא ורוצים שהתובנות יישארו.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-label"><i data-lucide="arrow-left-right" class="icon-sm"></i> עוברים לשיחה הבאה בלי לאבד חוט</div>
+            <p class="step-desc">אחרי שמפעילים wrap ומאשרים מה נכנס לזיכרון, נשאר עוד צעד קטן: מבקשים מקלוד לנסח <strong>פרומפט המשך</strong> — סיכום קצר של איפה בדיוק המשימה עומדת ומה נשאר לעשות. מעתיקים אותו, פותחים שיחה חדשה, ומדביקים אותו כהודעה הראשונה. כך השיחה החדשה ממשיכה בדיוק מהנקודה שבה עצרתם, עם חלון הקשר פנוי לגמרי.</p>
+
+            <div class="section-label"><i data-lucide="shield-check" class="icon-sm"></i> שלושה הרגלים ששומרים על החלון נקי מלכתחילה</div>
+            <div class="flip-grid">
+              <div class="flip-card" tabindex="0">
+                <div class="flip-card-inner">
+                  <div class="flip-front"><div class="flip-icon">💭</div><h4>תכנון מחוץ ל-Claude Code</h4><span class="flip-hint">העבירו את העכבר ←</span></div>
+                  <div class="flip-back">פרויקט חדש מגבשים קודם בשיחת צ'אט רגילה, ומביאים ל-Claude Code רק את הפרומפט הסופי. גם התלבטויות באמצע עבודה כדאי "לפתור" בשיחה נפרדת ולחזור עם החלטה.</div>
+                </div>
+              </div>
+              <div class="flip-card" tabindex="0">
+                <div class="flip-card-inner">
+                  <div class="flip-front"><div class="flip-icon">💬</div><h4>שאלות צד עם /btw</h4><span class="flip-hint">העבירו את העכבר ←</span></div>
+                  <div class="flip-back">לשאלה לא קשורה, מקלידים /btw ואחריה השאלה. התשובה מופיעה בחלונית נפרדת ולא נכנסת להיסטוריה. אין לה גישה לכלים — טובה לשאלת זיכרון, לא לחיפוש בקוד או הרצת פקודות.</div>
+                </div>
+              </div>
+              <div class="flip-card" tabindex="0">
+                <div class="flip-card-inner">
+                  <div class="flip-front"><div class="flip-icon">🧑‍💻</div><h4>סוכנים למשימות כבדות</h4><span class="flip-hint">העבירו את העכבר ←</span></div>
+                  <div class="flip-back">מחקר ארוך או בדיקה שצורכת קונטקסט נשלחים לסוכן נפרד, שפועל בחלון משלו ומחזיר רק את התוצאה הסופית.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== STEP 7 ===== -->
+        <div class="step" id="step7">
+          <div class="step-header">
+            <span class="step-number">שלב 7</span>
+            <h2 class="step-title">וכשזה <span class="hl-underline">גדל</span> לארגון שלם</h2>
+            <p class="step-desc">כל מה שבנינו עד כה הוא בקנה מידה אישי — מה קורה כשזה עובר לאלפי עובדים?</p>
+          </div>
+
+          <div class="reveal">
+            <p class="step-desc">כל מה שבנינו עד כה הוא בקנה מידה אישי — אדם אחד, קבצים משלו, ואישור שלו לפני כל שינוי. כשאותו רעיון עובר לארגון עם אלפי עובדים שמריצים אלפי שיחות עם קלוד במקביל, נוספות שתי בעיות שאין להן מקבילה בקנה המידה שעבדתם בו עד כה.</p>
+
+            <div class="steps-list" style="margin-top:1rem;">
+              <div class="step-card info">
+                <div class="step-num-badge">1</div>
+                <div class="step-card-body">
+                  <div class="step-who">בעיה ראשונה: התנגשות עדכונים</div>
+                  <p>מה קורה כששני אנשים מנסים לעדכן את אותו קובץ זיכרון באותו רגע? כדי שאחד לא ידרוס בטעות את השני, נבנה מנגנון שנקרא <strong>נעילה אופטימית דטרמיניסטית (Deterministic Optimistic Locking)</strong>, המבוסס על החתמת כל קובץ בקוד זיהוי (<strong>Hashing</strong>). רגע לפני השמירה, המערכת בודקת אם הקוד השתנה בינתיים — ואם כן, מושכת את הגרסה העדכנית ומנסה שוב.</p>
+                </div>
+              </div>
+
+              <div class="step-card info">
+                <div class="step-num-badge">2</div>
+                <div class="step-card-body">
+                  <div class="step-who">בעיה שנייה: מי מותר לו לשנות מה</div>
+                  <p>זיכרון ארגוני נבנה בשכבות הרשאה: זיכרון גלובלי שרוב העובדים רק קוראים ממנו, זיכרון מחלקתי, וטיוטה אישית חופשית לכל אחד.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-label"><i data-lucide="cpu" class="icon-sm"></i> "חלימה" — סקירה מחוץ לשיחה</div>
+            <div class="steps-list">
+              <div class="step-card claude">
+                <div class="step-num-badge"><i data-lucide="bot" class="icon-sm"></i></div>
+                <div class="step-card-body">
+                  <p>מעבר לזה, בארגונים גדולים מתפתח תהליך נוסף שנקרא <strong>"חלימה"</strong> — סקירה <strong>Out-of-band</strong> (מחוץ לשיחה עצמה), בניגוד לעדכון ה-In-band שהכרתם, שרצה ברקע על אלפי שיחות שכבר הסתיימו.</p>
+                  <p>גורם מארגן, <strong>Orchestrator</strong>, מפעיל צי סוכני משנה שסורקים תמלילים ומחפשים דפוסים חוזרים לפי הכוונה מראש מהארגון — תהליך שנקרא <strong>Steering</strong>. גם כאן, אדם מאשר כל שינוי לפני שהוא נכנס לתוקף.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="callout tip">
+              <i data-lucide="lightbulb" class="icon-sm"></i>
+              <div class="callout-body">זה בעצם בדיוק מה שעשיתם בעצמכם עם wrap — רק שבמקום שאתם מחליטים מתי לעדכן, כאן מערכת שלמה עושה זאת במקומכם, על סמך תבניות שאי אפשר לראות בעין אנושית בקנה מידה כזה.</div>
+            </div>
+
+            <p class="step-desc" style="margin-top:1rem;">המערכת שבניתם בלומדה הזו היא בדיוק אותם עקרונות, מותאמים לגודל הנכון: קובץ קבוע, קטלוג, מדפים ממוינים, וספרן שפועל רק כשקוראים לו ובאישורכם. זו נקודת ההתחלה הכי טובה שיש.</p>
+          </div>
+        </div>
+
+        <!-- ===== STEP 8 — CHECKLIST ===== -->
+        <div class="step" id="step8">
+          <div class="step-header">
+            <span class="step-number">סיכום</span>
+            <h2 class="step-title">צ'קליסט <span class="hl-underline">סיכום</span> הלומדה</h2>
+            <p class="step-desc">סמנו כל פריט כשהוא ברור לכם — וודאו שהמוח החכם באמת מוכן</p>
+          </div>
+          <div class="reveal">
+            <div class="checklist-progress" id="checklistProgress">0 / 8 הושלמו</div>
+            <div class="checklist" id="checklistEl"></div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ===== BOTTOM NAV ===== -->
+<nav class="bottom-nav" id="bottomNav" aria-label="ניווט בין שלבים">
+  <button class="nav-btn hidden" id="prevBtn" onclick="prevStep()"><i data-lucide="arrow-right" class="icon-sm"></i> הקודם</button>
+  <button class="nav-btn primary" id="nextBtn" onclick="nextStep()">הבא <i data-lucide="arrow-left" class="icon-sm"></i></button>
+</nav>
+
+<!-- ===== COMPLETION ===== -->
+<section class="completion" id="completion">
+  <div class="logo-bar" style="position:fixed;top:0;left:0;right:0;z-index:500;">
+    <img class="logo-bar-center" src="assets/images/LogoBanner.svg" alt="איריס פלד">
+  </div>
+  <video class="completion-video" muted playsinline preload="auto" aria-hidden="true">
+    <source src="assets/videos/finalvideo.mp4" type="video/mp4">
+  </video>
+  <img class="completion-mascot left" src="assets/images/Claudecode.png" alt="">
+  <img class="completion-mascot right" src="assets/images/Claudecode.png" alt="">
+  <div class="completion-content">
+    <div class="completion-actions">
+      <button class="completion-btn secondary" onclick="restartTutorial()"><i data-lucide="rotate-ccw" class="icon-sm"></i> חזרה להתחלה</button>
+    </div>
+    <p class="completion-goodluck"><span class="wave-letter">ב</span><span class="wave-letter">ה</span><span class="wave-letter">צ</span><span class="wave-letter">ל</span><span class="wave-letter">ח</span><span class="wave-letter">ה</span><span class="wave-letter">!</span></p>
+  </div>
+</section>
+
+<script>
+let currentStep = 1;
+const totalSteps = 8;
+
+const CHECKLIST = [
+  'אתם יודעים מה ההבדל בין CLAUDE.md (אתם כותבים) לבין auto memory (קלוד כותב לעצמו)',
+  'בניתם — או יודעים לבנות — קובץ CLAUDE.md גלובלי משלכם בנתיב <bdi dir="ltr">~/.claude/CLAUDE.md</bdi>',
+  'יש לכם קטלוג memory-ref.md שמפנה למדפי הזהות (aboutme / brandvoice / design-system) ולמדפי היומן',
+  'אתם מבינים למה מדפי הזהות מתעדכנים רק לפי בקשה מפורשת, ומדפי היומן דרך הסקיל',
+  'בניתם — או יודעים לבנות — את הסקיל wrap שממלא את קבצי היומן באישורכם',
+  'אתם יודעים מתי להשתמש ב-/compact (פינוי מהיר) ומתי ב-wrap (שימור לצמיתות)',
+  'אתם בודקים את מד ההקשר עם /context, ולא מחכים שהשיחה "תיתקע"',
+  'אתם מכירים את שלושת ההרגלים לשמירה על חלון נקי: תכנון בחוץ, /btw, וסוכנים למשימות כבדות'
+];
+
+window.addEventListener('load', () => {
+  document.querySelector('.hero').classList.add('animate');
+  setTimeout(() => {
+    const c = document.querySelector('.hero-content');
+    const h = document.querySelector('.hero').offsetHeight;
+    c.style.top = (h - c.offsetHeight - window.innerHeight * 0.03) + 'px';
+  }, 2000);
+  buildChecklist();
+  lucide.createIcons();
+});
+
+function startTutorial() {
+  const hero = document.getElementById('hero');
+  hero.style.opacity = '0';
+  hero.style.transition = 'opacity 0.4s ease';
+  setTimeout(() => {
+    hero.style.display = 'none';
+    document.getElementById('app').classList.add('visible');
+    document.getElementById('bottomNav').classList.add('visible');
+    updateStep(1);
+    window.scrollTo(0,0);
+  }, 400);
+}
+
+function goToStep(n) {
+  if (n < 1 || n > totalSteps) return;
+  currentStep = n;
+  updateStep(n);
+}
+function nextStep() {
+  if (currentStep < totalSteps) {
+    currentStep++;
+    updateStep(currentStep);
+  } else {
+    showCompletion();
+  }
+}
+function prevStep() {
+  if (currentStep > 1) { currentStep--; updateStep(currentStep); }
+}
+
+function updateStep(n) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step' + n)?.classList.add('active');
+
+  document.querySelectorAll('.side-step').forEach((btn, i) => {
+    btn.classList.remove('active','completed');
+    const num = btn.querySelector('.side-step-num');
+    if (i < n - 1) { btn.classList.add('completed'); num.innerHTML = '<i data-lucide="check"></i>'; }
+    else            { num.textContent = (i + 1); }
+    if (i === n - 1) btn.classList.add('active');
+  });
+
+  document.getElementById('sideProgressFill').style.width = (n / totalSteps * 100) + '%';
+  document.getElementById('sideProgressLabel').textContent = n + ' / ' + totalSteps + ' שלבים';
+
+  document.getElementById('prevBtn').classList.toggle('hidden', n === 1);
+  document.getElementById('nextBtn').innerHTML = n === totalSteps
+    ? 'סיום <i data-lucide="check" class="icon-sm"></i>'
+    : 'הבא <i data-lucide="arrow-left" class="icon-sm"></i>';
+
+  const activeNav = document.querySelectorAll('.side-step')[n-1];
+  if (activeNav) activeNav.scrollIntoView({behavior:'smooth', block:'nearest'});
+
+  window.scrollTo({top:0, behavior:'smooth'});
+  setTimeout(triggerReveal, 100);
+  setTimeout(() => lucide.createIcons(), 0);
+}
+
+function triggerReveal() {
+  const active = document.querySelector('.step.active');
+  if (!active) return;
+  active.querySelectorAll('.reveal').forEach((el, i) => {
+    setTimeout(() => el.classList.add('visible'), i * 130);
+  });
+}
+
+function sideNav(n) {
+  goToStep(n);
+  if (window.innerWidth <= 768) closeSidebar();
+}
+function toggleSidebar() {
+  const open = document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarBackdrop').classList.toggle('open');
+  document.getElementById('menuToggle').setAttribute('aria-expanded', open);
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarBackdrop').classList.remove('open');
+  document.getElementById('menuToggle').setAttribute('aria-expanded', 'false');
+}
+
+function toggleSettingsItem(btn) {
+  const item = btn.closest('.settings-item');
+  const open = item.classList.toggle('open');
+  btn.setAttribute('aria-expanded', open);
+}
+
+function buildChecklist() {
+  document.getElementById('checklistEl').innerHTML = CHECKLIST.map(item => `
+    <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleCheck(this);}">
+      <div class="check-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div class="check-content">${item}</div>
+    </div>
+  `).join('');
+}
+function toggleCheck(item) {
+  const checked = item.classList.toggle('checked');
+  item.setAttribute('aria-checked', checked);
+  const done  = document.querySelectorAll('.check-item.checked').length;
+  const total = document.querySelectorAll('.check-item').length;
+  document.getElementById('checklistProgress').textContent = `${done} / ${total} הושלמו`;
+}
+
+function copyPrompt(btn) {
+  const text = btn.closest('.prompt-block').querySelector('.prompt-text').innerText;
+  const done = () => {
+    const label = btn.querySelector('span');
+    const icon  = btn.querySelector('[data-lucide]');
+    btn.classList.add('copied');
+    icon.setAttribute('data-lucide','check');
+    label.textContent = 'הועתק!';
+    lucide.createIcons();
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      icon.setAttribute('data-lucide','copy');
+      label.textContent = 'העתק';
+      lucide.createIcons();
+    }, 1800);
+  };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  } else {
+    fallbackCopy(text, done);
+  }
+}
+function fallbackCopy(text, cb) {
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(ta);
+  cb();
+}
+
+function showCompletion() {
+  closeSidebar();
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('bottomNav').style.display = 'none';
+  document.getElementById('completion').classList.add('visible');
+  const completionVideo = document.querySelector('.completion-video');
+  completionVideo.currentTime = 0;
+  completionVideo.play();
+  lucide.createIcons();
+}
+function restartTutorial() {
+  document.getElementById('completion').classList.remove('visible');
+  document.querySelector('.completion-video').pause();
+  document.getElementById('app').style.display = 'flex';
+  const bottomNav = document.getElementById('bottomNav');
+  bottomNav.style.display = '';
+  bottomNav.classList.add('visible');
+  currentStep = 1;
+  updateStep(1);
+  document.querySelectorAll('.check-item').forEach(i => i.classList.remove('checked'));
+  document.getElementById('checklistProgress').textContent = `0 / ${CHECKLIST.length} הושלמו`;
+}
+</script>
+</body>
+</html>
