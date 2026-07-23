@@ -406,7 +406,7 @@ ul.content-list { padding-right:18px; display:flex; flex-direction:column; gap:4
 @media (max-width:640px) {
   .doc-stack { height:auto; }
   .doc-card { position:static; margin:0.6rem auto; transform:none !important; width:88%; max-width:320px; height:auto; min-height:120px; }
-  .doc-card.hub { width:88%; max-width:320px; height:auto; }
+  .doc-card.hub { width:88%; max-width:320px; height:auto; margin:1.1rem auto 0.6rem; position:static; }
   .doc-card:hover, .doc-card:focus-visible, .doc-card.hub:hover, .doc-card.hub:focus-visible { transform:scale(1.03) !important; }
 }
 
@@ -762,8 +762,8 @@ ul.content-list { padding-right:18px; display:flex; flex-direction:column; gap:4
             <p class="step-desc">נקודה חשובה לגבי המדפים האלה: הם לא מתעדכנים לבד. יש כאן בעצם שני סוגי מדפים, עם שני כללים שונים:</p>
 
             <div class="settings-accordion">
-              <div class="settings-item open">
-                <button class="settings-item-head" onclick="toggleSettingsItem(this)" aria-expanded="true">
+              <div class="settings-item">
+                <button class="settings-item-head" onclick="toggleSettingsItem(this)" aria-expanded="false">
                   <div class="settings-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="id-card" aria-hidden="true" class="lucide lucide-id-card"><path d="M16 10h2"></path><path d="M16 14h2"></path><path d="M6.17 15a3 3 0 0 1 5.66 0"></path><circle cx="9" cy="11" r="2"></circle><rect x="2" y="5" width="20" height="14" rx="2"></rect></svg></div>
                   <div class="settings-item-title">מדפי זהות וסגנון</div>
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="chevron-down" aria-hidden="true" class="lucide lucide-chevron-down settings-chevron"><path d="m6 9 6 6 6-6"></path></svg>
