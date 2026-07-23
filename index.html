@@ -595,7 +595,7 @@ ul.content-list { padding-right:18px; display:flex; flex-direction:column; gap:4
 <a href="#mainContent" class="skip-link">דלגו לתוכן הראשי</a>
 
 <!-- ===== HERO ===== -->
-<section class="hero animate" id="hero" style="opacity: 0; transition: opacity 0.4s; display: none;">
+<section class="hero" id="hero">
   <div class="logo-bar">
     <img class="logo-bar-center" src="assets/images/LogoBanner.svg" alt="איריס פלד">
   </div>
@@ -616,7 +616,7 @@ ul.content-list { padding-right:18px; display:flex; flex-direction:column; gap:4
 </section>
 
 <!-- ===== APP ===== -->
-<div class="app visible" id="app">
+<div class="app" id="app">
   <div class="logo-bar app-logo-bar">
     <img class="logo-bar-center" src="assets/images/LogoBanner.svg" alt="איריס פלד">
     <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()" aria-label="פתחו תפריט שלבים" aria-expanded="false"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="menu" aria-hidden="true" class="lucide lucide-menu"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg></button>
@@ -1578,7 +1578,7 @@ ul.content-list { padding-right:18px; display:flex; flex-direction:column; gap:4
 </div>
 
 <!-- ===== BOTTOM NAV ===== -->
-<nav class="bottom-nav visible" id="bottomNav" aria-label="ניווט בין שלבים">
+<nav class="bottom-nav" id="bottomNav" aria-label="ניווט בין שלבים">
   <button class="nav-btn" id="prevBtn" onclick="prevStep()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" aria-hidden="true" class="lucide lucide-arrow-right"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg> הקודם</button>
   <button class="nav-btn primary" id="nextBtn" onclick="nextStep()">הבא <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-left" aria-hidden="true" class="lucide lucide-arrow-left icon-sm"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg></button>
 </nav>
